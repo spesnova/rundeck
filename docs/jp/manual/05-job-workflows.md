@@ -117,10 +117,6 @@
 
 URL からスクリプトをダウンロードし、フィルタリングされたノードセットに対してそれを実行します。テキストフィールドにスクリプトへの引数を指定できます。
 
-Downloads a script from a URL, and executes it to the filtered Node
-set. Arguments can be passed to the script by specifying them in the
-lower text field.
-
 ![Script URL step type](../figures/fig0406.png)
 
 これは `dispatch` を使ってスクリプト URL を呼びだすことに似ています：
@@ -136,7 +132,6 @@ URL には実行時に展開される[コンテキスト変数](#コンテキス
 ![Job step type](../figures/fig0407.png)
 
 ジョブリファレンスのフォームは保存されているジョブの中から選択しやす閲覧画面を提供します。「Choose A Job...」リンクを押し、希望するジョブを選んでください。
-
 
 最後に、オプションが定義されたジョブならそれらをコマンドライン引数としてテキストフィールドに指定したり、現在のジョブへ入力オプションを渡すための変数として使うことができます。フォーマット：
 
@@ -168,62 +163,58 @@ URL には実行時に展開される[コンテキスト変数](#コンテキス
 
 「Revert All Changes」ボタンを押すと、全ての変更を戻してオリジナルの状態に戻します。
 
-## Save the changes
+## 変更の保存
 
-Once the Workflow steps have been defined and order, changes are
-permanently saved after pressing the "Create" button if new or the
-"Update" button if the Job is being modified.
+一旦ワークフローステップが定義され順番が決められると、ワークフローを新規作成する場合は「Create」ボタン、既にあるワークフローの編集の場合は「Update」ボタンによって変更を保存できます。
 
-## Context Variables
+## コンテキスト変数
 
-When a Job step is executed, it has a set of "context" variables that you can access in the Job step. There are several sets of context variables, including: the Job context `job`, the Node context `node`, and the Option context `option`.
+あるジョブステップは実行される際、ジョブステップ自身にアクセス可能なあるコンテキスト変数のセットを持っています。ジョブコンテキストジョブ・ノードコンテキストノード・オプションコンテキストオプションといったいくつかのコンテキスト変数があります。
 
-Job context variables:
+ジョブコンテキスト変数:
 
-* `job.name`: Name of the Job
-* `job.group`: Group of the Job
-* `job.id`: ID of the Job
-* `job.execid`: ID of the current Execution
-* `job.username`: Username of the user executing the Job
-* `job.project`: Project name
+*   `job.name`: ジョブの名前
+*   `job.group`: ジョブのグループ
+*   `job.id`: ジョブの ID
+*   `job.execid`: 現在の実行 ID 
+*   `job.username`: ジョブを実行しているユーザー名
+*   `job.project`: プロジェクト名
 
-Node context variables:
+ノードコンテキスト変数:
 
-* `node.name`: Name of the Node being executed on
-* `node.hostname`: Hostname of the Node
-* `node.username`: Usernae of the remote user
-* `node.description`: Description of the node
-* `node.tags`: Comma-separated list of tags
-* `node.os-*`: OS properties of the Node: `name`,`version`,`arch`,`family`
-* `node.*`: All Node attributes defined on the Node.
+*   `node.name`: ジョブが実行されているノード名
+*   `node.hostname`: ノードのホスト名
+*   `node.username`: リモートユーザー名
+*   `node.description`: ノードの説明
+*   `node.tags`: カンマ区切りのタグ
+*   `node.os-*`: ノードの OS 属性 : `name,version,arch,family`
+*   `node.*`: ノードに定義されている全てのノード属性
 
-Option context variables are referred to as `option.NAME` (more about [Job Options](job-options.html) in the next chapter.)
+オプションコンテキスト変数は、`option.NAME` として参照します（詳細については次のチャプターの[ジョブオプション](job-options.html)を見てください。）
 
-### Context Variable Usage
+### コンテキスト変数の使用方法
 
-Context variables can be used in a few ways in a Job step, with slightly different sytanxes:
+ジョブステップの中でコンテキスト変数を使う方法がいくつかあり、それぞれ文法が微妙に違います:
 
-* Commands, Script Arguments and Job Reference Arguments
+*   コマンドやスクリプトの引数とジョブリファレンスの引数
 
     :     `${ctx.name}`
 
-* Inline Script Content (*see note*)
+*   インラインのスクリプトコンテンツ （*注釈を参照*）
 
     :     `@ctx.name@`
 
-    **Note**: The "Inline Script Content" variable expansion is **not** available for "Script File" steps.  The Script File is not rewritten at all when used for execution.
+    **注** : インラインスクリプトコンテンツの変数展開は「Script File」ステップでは行え**ません**。スクリプトファイルは実行時に変数展開されるわけではないからです。
 
-* Environment Variables (*see note*)
+*   環境変数 （*注釈を参照*）
 
     :     `$RD_CTX_NAME`
 
-    The syntax for Environment variables is that all letters become uppercase, punctuation is replaced with underscore, and the name is prefixed with `RD_`.
+    環境変数用の文法では、文字が全て大文字になり、句読点がアンダースコアに置き換えられ、名前に接頭辞 `RD_` が付きます。
+    **注** : SSH サーバーに必要なことについては、[管理者向けガイドの SSH チャプター リモートコマンドを通して環境変数を渡す](#リモートコマンドを通して環境変数を渡す)を参照してください。
 
-    **Note**: See the chapter [Administration - SSH - Passing Environment Variables Through Remote Commands](../administration/ssh.html#passing-environment-variables-through-remote-command) for information about requirements of the SSH server.
+## まとめ
 
-## Summary
+ここまでであなたはもうジョブワークフローがどういったものか、具体的にはワークフローの定義の仕方やどんなジョブステップを追加する事ができるかといったことを理解しています。
 
-At this point you should understand what a Job workflow is, the kinds
-of steps they can contain and how to define a workflow.
-
-Next, we'll cover more about Rundeck's Job Option features.
+次のチャプターでは、Rundeck のジョブオプションの機能をカバーしていきます。
