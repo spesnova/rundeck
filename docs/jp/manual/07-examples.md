@@ -148,15 +148,11 @@ File listing: stop.sh
 
 後々の管理を考えて将来出てくるジョブと既存のジョブが結合できるようジョブを全ての個々のステップ毎に定義しようとすると大変複雑になってきますが、これは後からでもできることです。どのように処理を個々のジョブに分解するかは、保守性と再利用性のバランスです。
 
-### Job grouping
+### ジョブのグルーピング
 
-Though not a requirement, it is helpful to use job groups and 
-have a convention for naming them. 
-A good convention assists others with a navigation scheme that
-helps them remember and find the desired procedure.
+絶対必要というわけではないですが、ジョブのグルーピングとその命名規則を決めておくと便利です。優れた命名規則は名前を思い出しやすく、探している処理を見つけやすくしてくれます。
 
-The administrator chooses to create a top level group named
-"/anvils/web/" where the web restart related jobs will be organized.
+管理者はウェブサービスのリスタートに関連するジョブが置かれるトップレベルのグループを "/anvils/web" という名前にしました。
 
     anvils/
     `-- web/
@@ -164,87 +160,57 @@ The administrator chooses to create a top level group named
         |-- start
         `-- stop
 
-After choosing the "anvils" project users will see this
-grouping of jobs.
+"anvils" プロジェクトを選択後、このジョブグループがあることがわかります。
 
 ![Anvils job group](../figures/fig0604.png)
 
-## Job option
+## ジョブのオプション
 
-To support specifying the restart method to the scripts,
-the the three jobs will declare an option named "method".
-Without such a parameter, the administrator would be forced to
-duplicate restart Jobs for both the kill and normal stop methods.
+スクリプトにてリスタートの方法を指定するために、先ほどの 3 つのジョブにて "method" というオプションを作ります。それらのパラメーターが無い場合、管理者は kill と normal の両方のストップ方法についてリスタートジョブを用意することになります。
 
-Another benefit from defining the job option is the ability to display a
-menu of choices to the user running the job.  Once chosen, the value
-selected by the menu is then passed to the script.
+ジョブオプションを定義するもう一つのメリットは、ジョブを実行しようとした際に選択肢のひとつとしてメニューに表示されることです。選択するとメニューから選択した値がスクリプトに渡されます。
 
-### Allowed values
+### 許可された値
 
-An option can be defined to only allow values from a specified
-list. This places safe guards on how a Job can be run by limiting
-choices to those the scripts can safely handle.
+定義できるオプションは、指定されたリスト内にあるものに限ります。これは安全にスクリプトを利用できるようパラメーターの選択肢を制限してジョブを実行するセーフガードの役割を担います。
 
-The administrator takes advantage of this by limiting the "method" option
-values to just  "normal" or "kill" choices.
+管理者はこれを利用して、"normal" または "kill" のみ選択可能になるよう "method" オプションにて制限をかけます。
 
-The screenshot below contains the Option edit form for the "method" option.
-The form includes elements to define description and default
-value, as well as, Allowed Values and Restrictions.
+以下のスクリーンショットは、"method" オプションを編集しているところです。フォームにはオプションの説明とデフォルトの値だけでなく、Allowed Values (許可された値) と Restrictions (制限) の項目が入っています。
 
 ![Option editor for method](../figures/fig0605.png)
 
-Allowed values can be specified as a comma separated list as seen above but
-can also be requested from an external source using a "remote URL".
+上述のように 許可された値はカンマ区切りのリストで指定できます、また "remote URL" を使った外部リソースからも可能です。
 
-Option choices can be controlled using the "Enforced from values"
-restriction. When set "true", the Rundeck UI will only present a
-popup menu. If set "false", a text field will also be presented. Use
-the "Match Regular Expression" form to validate the input option.
+"Enforced from Allowed values (許可された値のみという強要)" という制約を使ってオプションの選択肢を管理できます。"true" をセットしたとき、Rundeck UI は許可された値のみ選択可能なようポップメニューだけ表示されます。"false" をセットしたときは、テキストフィールドも表示されます。"Match Regular Expression" を使って入力をバリデートすることもできます。
 
-Here's a screenshot of how Rundeck will display the menu choices:
+Rundeck がどのようにメニューの選択肢を表示するかのスクリーンショットが以下になります。
 
 ![Option menu for method](../figures/fig0606.png)
 
+### オプションデータへのスクリプトからのアクセス
 
-### Script access to option data
+オプション値は引数または参照値としてスクリプトに渡す事ができ、スクリプト内で名前を付けたトークンとして利用できます。例えば、"method" オプションの値にアクセスするにはいくつかの方法があります:
 
-Option values can be passed to scripts as an argument or referenced
-inside the script using a named token. For example, the value for the
-"method" option selection can be accessed in one of several ways:
+環境変数として参照する:
 
-Value referenced as an environment variable:
+*   Bash: $CT\_OPTION\_METHOD
 
-* Bash: $CT\_OPTION\_METHOD
+``srciptargs`` タグを使ってスクリプトやコマンドの引数として値を渡します:
 
-Value passed in the argument vector to the executed script or command
-via the ``scriptargs`` tag:
+*   Commandline Arguments: ${option.method}
 
-* Commandline Arguments: ${option.method}
+スクリプト内である名前が作られたトークンとして値が展開され、実行前に置き換わります:
 
-Value represented as a named token inside the script and replaced
-before execution:  
+*   Script Content: @option.method@
 
-* Script Content: @option.method@
+## ジョブワークフローを作る
 
-      
-## Job workflow composition
+リスタート処理を管理するのに必要なスクリプトとオプションを理解した上で、ジョブの定義を作っていくのが最後のステップになります。
 
-With an understanding of the scripts and the option needed to
-control the restart operation, the final step is to compose the Job
-definitions. 
+Rundeck の GUI からもドキュメントフォーマット [job-v20(5)](../manpages/man5/job-v20.html)に従った XML 形式で各ジョブを定義できます。このドキュメントフォーマットには Rundeck GUI フォームの中での選択肢に相当するタグセットについても書かれています。
 
-While each job can be defined graphically in Rundeck, each can
-succinctly be defined using an XML file conforming to the
-[job-v20(5)](../manpages/man5/job-v20.html) document format. This 
-document contains a set of tags corresponding to the choices seen in
-the Rundeck GUI form.
-
-Below are the XML definitions for the jobs. One or more jobs can be
-defined inside a single XML file but your convention will dictate how to
-organize the definitions. The files can be named any way desired and
-do not have to correspond to the Job name or its group.
+以下にあるのはジョブについての XML の定義です。1 つの XML ファイルに 1 つ以上のジョブが定義できますが、どのように定義するかはあなたが決めるルール次第です。ファイルも好きなように名前を付けることが出来ます、必ずしもジョブ名やそのグループに相当する名前である必要はありません。
 
 File listing: stop.xml
 
@@ -281,11 +247,7 @@ File listing: stop.xml
          </job>
     </joblist>
 
-
-Defines Job, /anvils/web/stop, and executes the shell script to
-Nodes tagged "web". Using the ``scriptargs`` tag, the shell
-script is passed a single argument, ``${option.method}``,
-containing the value chosen in the Job run form.
+/anvils/web/stop というジョブを定義します、これは "web" というタグが付いたノードに対してシェルスクリプトを実行します。``scripttags`` を使ってシェルスクリプトにジョブの実行フォームから選択された値を含んだ引数 ``${option.method}`` をひとつ渡します。
 
 File listing: start.xml
 
@@ -316,9 +278,7 @@ File listing: start.xml
       </job>
     </joblist>
 
-Defines Job, /anvils/web/start, that also executes a shell script to
-Nodes tagged "web".
-
+/anvils/web/start というジョブを定義します、これは "web" というタグが付いたノードに対してシェルスクリプトを実行します。
 
 File listing: restart.xml
 
@@ -349,26 +309,19 @@ File listing: restart.xml
        </job>	
     </joblist>
 
+/anvils/web/Restart というジョブを定義します、これは ``jobref`` タグを用いて連続するジョブ郡を実行します
 
-Defines Job, /anvils/web/Restart, that executes a sequence of Job calls,
-using the ``jobref`` tag.
+今回は `<nodefilters>` または `<dispatch>` の項目を定義していないことに注意してください、今回はこの連続実行をサーバー上で**一度だけ**しか行わないからです。ジョブリファレンスはそれぞれ 1 回呼ばれ、"start" と "stop" ジョブはそれぞれ定義されているノードに対してディスパッチされます。
 
-Note that we don't define a `<nodefilters>` or `<dispatch>` section, because we
-only want this sequence to execute **once**, on the server node.  The Job
-references will each be called once, and the "start" and "stop" Jobs will
-each be dispatched to the nodes they define.
+XML の定義ファイルを Rundeck サーバーに保存すると、[rd-jobs](../manpages/man1/rd-jobs.html) コマンドを用いてそれらを読み込む事ができます。
 
-Saving the XML definitions files located on the Rundeck server,
-one can load them using the [rd-jobs](../manpages/man1/rd-jobs.html) command.
-
-Run the ``rd-jobs load`` command for each job definition file:
+``rd-jobs`` を実行して各ジョブの定義ファイルからコマンドを読み込みます:
 
     rd-jobs load -f start.xml
     rd-jobs load -f stop.xml
     rd-jobs load -f restart.xml
 
-The ``rd-jobs list`` command queries Rundeck and prints out the list of
-defined jobs:
+``rd-jobs list`` コマンドは Rundeck に定義済みのジョブのリストを出力するよう問い合わせます:
 
     rd-jobs list -p anvils
     Found 3 jobs:
@@ -376,75 +329,45 @@ defined jobs:
 	- start - 'the web start procedure'
 	- stop - 'the web stop procedure'
 
-Of course, the jobs can be viewed inside the Rundeck graphical console by going to
-the Jobs page. Hovering over the "Restart" job name reveals job detail.
+もちろん、これらのジョブは Rundeck のグラフィカルコンソールの Jobs ページからも見る事ができます。ジョブ名 "Restart" の上にホバリングオーバーしてジョブの詳細が表示されます。
 
 ![Anvils restart jobs](../figures/fig0607.png)
 
-You will see the composition of the "Restart" job as a workflow
-calling the jobs: stop and start. The "Restart" job passes the
-``-method`` option value to the lower level stop Job.
+ここまでで、各ジョブ(ストップとスタート)を呼ぶワークフローとして "Restart" ジョブの組み立て方を理解したことでしょう。"Restart" ジョブは ``-method`` オプションの値をより低レベルのストップジョブに渡します。
 
-## Running the job
+## ジョブを実行する
 
-The Jobs can be run from the Rundeck graphical console by going to the
-"Jobs" page. From there, navigate to the "Anvils/web" job group to
-display the three stored Jobs.
+ジョブは Rundeck のグラフィカルコンソールの "Jobs" ページから実行できます。ここから、3 つの保存済みジョブが表示される "Anvils/web" ジョブグループまでナビゲートします。
 
-Clicking the "Run" button for the Restart job, will display the
-options selection page. The menu for the "method" option displays the
-two choices: "normal" and "kill". No other choices can be made, nor a
-textfield for free form entry, because the "method" option was defined
-with the restriction "enforced from allowed values".
+"Run" ボタンをクリックしてジョブをリスタートさせます。するとオプションを選択するページが表示されます。"method" オプションについてのメニューが 2 つの選択肢 "normal" と "kill" を表示しています。他の選択肢や自由に入力できるテキストフィールドは利用できません、"method" オプションが選択肢を限定するように定義されているからです。
 
 ![Restart run page](../figures/fig0608.png)
 
-The jobs can also be started from the command line using the
-[run](../manpages/man1/run.html) shell tool. The job group and name are specified
-using the "-j" parameter. Any options the Job supports are supplied
-after the "--" (double dash) parameter. (The "-p" parameter specifies the project,
-but it can be left out if there is only one project available.)
+シェルツール [run](../manpages/man1/run.html) を使ってコマンドラインからもジョブを起動することができます。"-j" パラメーターを使ってジョブグループとジョブ名を指定してください。ジョブがサポートするあらゆるオプションは "--" パラメーターの後に指定します。("-p" パラメーターはプロジェクトの指定に用います、しかし利用可能なプロジェクトが 1 つしか無い場合は指定しなくてもよいです。)
 
-Run Restart specifying the method, "normal": 
+"normal" メソッドを指定してリスタートジョブを実行します:
 
     run -j "anvils/web/Restart" -p anvils -- -method normal
 
-Run Restart specifying the method, "kill":
+"kill" メソッドを指定してリスタートジョブを実行します:
 
     run -j "anvils/web/Restart" -p anvils -- -method kill
 
+## ジョブのアクセスコントロール
 
-## Job access control
+ジョブの編集または実行へのアクセス管理は、ACL ポリシードキュメントフォーマット（[aclpolicy-v10(5)](../manpages/man5/aclpolicy-v10.html)） を使って定義できます。このファイルは、どのユーザーグループがどんなアクションが行えるのかを記述したポリシー要素で構成されています。この詳細は管理者向けガイドにおける[権限の許可(Authorization)](../administration/authorization.html) の章に載っています。
 
-Access to running or modifying Jobs is managed in an access control
-policy defined using the aclpolicy document format ([aclpolicy-v10(5)](../manpages/man5/aclpolicy-v10.html)). 
-This file contains a number of policy elements that describe what user
-group is allowed to perform which actions. The
-[Authorization](../administration/authorization.html) Chapter of the Administration Guide
-covers this in detail.
+管理者は 2 つのアクセスレベルを定義した ACL ポリシーを使いたいと思っています。最初のレベルはジョブをただ実行することだけが許されます。2 つ目のレベルは、管理者作業とジョブの定義を編集できます。
 
-The administrator wants to use the aclpolicy to define two levels of
-access. The first level, has limited privilege and allows for just
-running jobs. The second level, is administrative and can modify job
-definitions.
+ポリシー機能は、グループまたは利用パターンごとのアクセス管理情報をひとつまたは複数のポリシーファイルにまとめることができます。普通にインストールした Rundeck には 2 つのユーザーグループが定義されています: "admin" と "user" です。そして "admin" グループについてポリシーが作られています。
 
-Policies can be organized into more than one file to help organize
-access by group or pattern of use. The normal Rundeck install will
-define two user groups: "admin" and "user" and have a generated a policy
-for the "admin" group. 
+Acme 社の管理者は、"user" グループに入っている人たちが "anvils" と "anvlis/web" ジョブグループの実行のみ許可されるようなポリシーを 1 つ作る事に決めました。私たちは Rundeck を普通どおりインストールしたときに入っている "user" ログイングループを利用する事が出来ます。
 
-The Acme administrator decides to create a policy that allows users in
-the "user" group to run commands just in the "anvils" and
-"anvils/web" Job groups. We can employ the "user" login and group as
-it was also included in the normal install.
-
-To create the aclpolicy file for the "user" group:
+"user" グループに対してのポリシーファイルを作る方法:
 
     cp $RDECK_BASE/etc/admin.aclpolicy $RDECK_BASE/etc/user.aclpolicy
 
-Modify the `<command>` and `<group>` elements as shown in the example
-below. Notice that just workflow\_read,workflow\_run actions are
-allowed.
+以下の例にあるように `<command>` と `<group>` 要素を編集します。workflow\_read と workflow\_run アクションのみ許可されていることがわかります。
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.xml}
 $ cat $RDECK_BASE/etc/user.aclpolicy
@@ -461,31 +384,22 @@ $ cat $RDECK_BASE/etc/user.aclpolicy
 </policies>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Restart Rundeck to load the new policy file (see [Administration - Startup and Shutdown](../administration/startup-and-shutdown.html)).
+新しいポリシーファイルを読み込ませるために Rundeck をリスタートします。（[管理者向けガイド - 起動とシャットダウン](../administration/startup-and-shutdown.html) を参照してください）
 
     rundeckd restart
 
-Once the Rundeck webapp has started, login as the "user" user (the
-password is probably "user"). Just the Jobs in the "anvils" group are
-displayed in the Jobs page. The "user" user does is not allowed to access
-jobs outside of "/anvils group.
+Rundeck ウェブアプリケーションを起動して、"user" ユーザーとしてログインします (パスワードは多分 "user" )。起動すると Jobs ページに "anvils" グループだけ表示されています。"user" ユーザーは "/anvils" グループ以外のジョブへのアクセス権限はありません。
 
-Notice the absence of the "New Job" button that would be displayed if
-logged in as "admin". Job creation is an action not granted to
-"user". Notice also, that the button bar for the listed Jobs does
-not include icons for editing or deleting the Job. Only workflow\_read
-and workflow\_actions were allowed in the `user.aclpolicy` file.
+"admin" としてログインすると表示される "New Job" ボタンがないことに気付きます。ジョブの作成権限は "user" には付与されていません。また、リストアップされたジョブについてのボタンバーにジョブの編集や削除アイコンが付いていないことにも気付きます。`user.aclpolicy` ファイルにて workflow\_read と workflow\_actions のみ許可されています。
 
+## リソースモデルソースの例
 
-## Resource model source examples
+[管理者向けガイド - ノードリソースソース - リソースモデルソース](../administration/node-resource-sources.html#リソースモデルソース) を参照してください。
 
-See [Administration - Node Resource Sources - Resource Model Source](../administration/node-resource-sources.html#resource-model-source).
+## リソースエディタの例
 
+[管理者向けガイド- ノードリソースソース - リソースエディタ](../administration/node-resource-sources.html#リソースエディタ) を参照してください。
 
-## Resource editor examples
+## オプションモデルプロバイダーの例
 
-See [Administration - Node Resource Sources - Resource Editor](../administration/node-resource-sources.html#resource-editor).
-
-## Option model provider examples
-
-See [Job Options - Option Model Provider](job-options.html#option-model-provider).
+[ジョブオプション - オプションモデルプロバイダ](http://rundeck.org/docs/manual/job-options.html#オプションモデルプロバイダ) を参照してください。
