@@ -1,242 +1,214 @@
-% Plugins
+% プラグイン
 % Alex Honor; Greg Schueler
 % November 20, 2010
 
+Rundeck のプラグインは、Rundeck core で利用されるいくつかのサービスのための新しいプロバイダです。
 Plugins for Rundeck contain new Providers for some of the Services used by
 the Rundeck core.
 
-Rundeck comes with some built-in providers for these services, but Plugins
-let you write your own, or use third-party implementations.
+Rundeck にはビルトインのプロバイダがありますが、自分で開発したり、サードパーティ製のプラグインも使ってみましょう。
 
-Rundeck currently comes installed with a few useful plugins: script-plugin and 
-stub-plugin.  See [Pre-installed plugins](plugins.html#pre-installed-plugins) for more info.
+プリインストールされている script-plugin と stub-plugin については [プリインストールプラグイン](plugins.html#プリインストールプラグイン) を参照してください。
 
-## Installing Plugins
+## プラグインのインストール
 
-Installation of plugins is simple:
+プラグインのインストールはシンプルです:
 
-Put the plugin file, such as `plugin.jar` or `some-plugin.zip`, into the Rundeck 
-server's libext dir:
+`plugin.jar` や `some-plugin.zip` のようなプラグインファイルを Rundeck サーバの libext ディレクトリに配置して下さい:
 
     cp some-plugin.zip $RDECK_BASE/libext
 
-The plugin is now enabled, and any providers it defines can be used by nodes
-or projects.
+これでプラグインが有効化されました。内部で定義されている provider をノードやプロジェクトで利用できるようになっています。
 
-The Rundeck server does not have to be restarted.
+Rundeck サーバをリスタートする必要はありません。
 
-## Uninstalling or Updating Plugins
+## プラグインのアンインストールとアップデート
 
-You can simply remove the plugin files from `$RDECK_BASE/libext` to uninstall
-them.
+`$RDECK_BASE/libext` から目的のファイルを削除すればアンインストールできます。
 
-You can overwrite an old plugin with a newer version to update it.
+アップデートの時には古いファイルを新しいファイルで上書きしてください。
 
-## About Plugins
+## プラグインについて
 
-Plugins are files that contain one or more Service Provider implementations. Each
-plugin file could contain multiple Providers for different types of services,
-however typically each plugin file would contain only providers related in some
-fashion.
+プラグインは 1 つ以上のサービスプロバイダを実装したファイル群です。プラグインファイルそれぞれに、異なるタイプのサービス用プロバイダを複数含めることができますが、何らかの形で関連しているプロバイダのみをまとめるのが一般的です。
 
-Rundeck includes a number of "built-in" providers, as well as a few 
-"included" plugin files.
+Rundeck にはいくつかの "built-in" プロバイダと、"included" プラグインファイルが含まれています。
 
-In this document "plugin" and "provider" are used somewhat interchangably. When 
-referring to an actual file containing the provider implementations we will say
-"plugin file".
+このドキュメントでは、"プラグイン" と "プロバイダ" をほぼ同義に扱います。実際のプロバイダ実装ファイルを参照するときには "プラグインファイル" と言います。
 
 ![Rundeck Providers and Plugin Files](../figures/fig1102.png)
 
-## Types of Plugins
+## プラグインの種類
 
-Rundeck supports several different types of plugins to perform different kinds 
-of services.
+Rundeck は様々なサービスで動作させるためにいくつかの異なるプラグインタイプをサポートしています。
 
-### Node Execution Plugins
+### ノード実行 プラグイン
 
-These plugins define ways of executing commands on nodes, and copying files to nodes.  
+ノード上でのコマンド実行や、ノードへのファイルコピーの方法について定義するプラグインです。
 
-More information:
+より詳細な情報については:
 
-* Configuration: [Node Execution Services](plugins.html#node-execution-services)
-* Lifecycle: [When Node Execution Service providers are invoked](plugins.html#when-node-execution-service-providers-are-invoked)
-* Built-in Providers: [Node Execution services](plugins.html#node-execution-services-1)
-* Included Plugins: [Pre-installed plugins](plugins.html#pre-installed-plugins)
+*   設定: [ノード実行サービス](plugins.html#ノード実行サービス)
+*   ライフサイクル: [ノード実行サービスプロバイダが実行されたとき](plugins.html#ノード実行サービスプロバイダが実行されたとき)
+*   組み込みプラグイン: [ノード実行サービス](plugins.html#ノード実行サービス)
+*   付属プラグイン: [プリインストールプラグイン](plugins.html#プリインストールプラグイン)
 
-### Resource Model Source Plugins
+### リソースモデルソース プラグイン
 
-These plugins define mechanisms for retrieving Resource Model information from a
-specific kind of source (such as a URL, file, or set of files in a directory).
+リソースモデル情報を指定した種類のソース（たとえば URL、ファイル、ディレクトリ内のファイル群）から取得するメカニズムを定義するプラグインです。
 
-More information:
+より詳細な情報については:
 
-* Configuration: [Resource Model Sources](plugins.html#resource-model-sources)
-* Built-in Providers: [Resource Model Sources](plugins.html#resource-model-sources-1)
+*   設定: [リソースモデルソース](plugins.html#リソースモデルソース)
+*   ビルトインプロバイダ: [リソースモデルサービス](plugins.html#リソースモデルサービス)
 
-### Resource Format Plugins
+### リソースフォーマット プラグイン
 
-These plugins define parsers and generators for different document formats, and
-are used by the Resource Model Source Plugins, as well as other parts of the
-Rundeck system.
+このタイプのプラグインには異なるドキュメントフォーマットのリソースモデル情報に対するパーサとジェネレータを定義します。さらにこれらは Rundeck システムにおける他の部分と同じくリソースモデルソースプラグインから利用されます。
 
-More information:
+より詳細な情報については:
 
-* Configuration: [Resource Format Generators and Parsers](plugins.html#resource-format-generators-and-parsers)
-* Built-in Providers: [Resource Format services](plugins.html#resource-format-services)
+*   設定: [リソースフォーマットジェネレータとパーサ](plugins.html#リソースフォーマットジェネレータとパーサ)
+*   組み込みプラグイン: [リソースフォーマットサービス](plugins.html#リソースフォーマットサービス)
 
-## About Services and Providers
+## 各サービスと各プロバイダについて
 
-The Rundeck core makes use of several different "Services" that provide
-functionality for the different steps necessary to execute workflows, jobs, 
-and commands across multiple nodes.
+Rundeck のコアは、複数ノードに対して様々なワークフロー・ジョブ・コマンドを実行する機能を持ったいくつかの異なる "サービス" を利用します。
 
-Each Service makes use of "Providers". Each Provider has a unique "Provider Name"
-that is used to identify it, and most Services have default Providers unless
-you specify different ones to use.
+
+各サービスは各 "プロバイダ" を利用しています。各プロバイダはそれぞれを識別するためのユニークな "プロバイダ名" を持っており、ほとんどのサービスはどれを使うか指定しなくてもいいようフォルトのプロバイダを持っています。
 
 ![Rundeck Services and Providers](../figures/fig1101.png)
 
-Services fall into different categories, which determine how and where they are used.
+サービスはどのように・どこで使われるかによって異なるサービスに分類されます。
 
-*Service Categories*:
+*サービスカテゴリ*:
 
-1. **Node Execution services** - providers of these services operate in the context of a single Node definition, and
-  can be configured at Node scope or higher:
+1.  **ノード実行サービス** - これらのサービスの各プロバイダはある一つのノード定義の条件下で処理を行います。そしてノードの範囲も設定可能です:
 
-    1. Node Executor - these providers define ways of executing a command on a Node (local or remote)
-    2. File Copier - these providers define ways of copying files to a Node.
+    1.  ノード実行 - これらのプロバイダでは、（ローカルまたはリモートの）あるノードに対して実行するコマンドを定義します。
+    2.  ファイルコピー - これらのプロバイダではあるノードに対してファイルをどのようにコピーするか定義します。
 
-2. **Project services**
+2.  **プロジェクトサービス** 
 
-    1. Resource Model Source - (aka "Resource Providers") these define ways of retrieving Node resources for a Project 
+    1.  リソースモデルソース - (別名 "リソースプロバイダ" ）これらはあるプロジェクト用にノードリソースの取得方法を定義します。
 
-3. **Global services** (framework level)
+3.  **グローバルサービス**（フレームワークレベル）
 
-    1. Resource Format Parser - these define document format parsers
-    2. Resource Format Generators - these define document format generators
+    1.  リソースフォーマットパーサ - これらにはドキュメントフォーマットパーサを定義します。
+    2.  リソースフォーマットジェネレータ - これらにはドキュメントフォーマットジェネレータを定義します。
 
-Specifics of how providers of these plugins work is listed below.
+これらのプラグインのプロバイダがどのように動作するかの詳細については以下で説明しています。
 
-Rundeck Plugins can contain more than one Provider.
+なお、Rundeck のプラグインは 1 つ以上のプロバイダを持つことができます。
 
-## Using Providers
+## プロバイダを使う
 
-### Node Execution Services
+### ノード実行サービス
 
-The two *Node services*, Node Executor and File Copier, are both configured similarly.
-They are configured for particular nodes on a node-specific basis,
-or set as a default provider for a project or for the system.
+ノード実行とファイルコピーという 2 つの*ノードサービス*は共に似たような設定がされています。これは特定のノードに対して行われるよう設定されているか、またはあるプロジェクトまたはシステム用のデフォルトプロバイダとして設定されています。
 
-If multiple providers are defined the most specific definition takes precedence
-in this order:
+複数プロバイダが定義される場合には以下のようにほとんどの定義で各プロバイダに優先順位を付けます:
 
-1. Node specific
-2. Project scope
-3. Framework scope
+1.  ノードの指定
+2.  プロジェクトスコープ
+3.  フレームワークスコープ
 
-#### Node Specific
+#### ノードの指定
+
+あるノードに対してプロバイダを有効にするには、そのノードの定義にある属性を追加します。
 
 To enable a provider for a node, add an attribute to the node definition.
 
-*Node Executor provider attributes*:
+*ノード実行プロバイダ属性*:
 
 `node-executor`
 
-:    specifies the provider name for a non-local node.
+:    ローカルではないノードに対してプロバイダ名を指定します。
 
 `local-node-executor`
 
-:    specifies the provider name for the local (server) node.
+:    ローカル（Rundeck サーバー）ノードに対してプロバイダ名を指定します。
 
-
-*FileCopier provider attributes*:
+ファイルコピープロバイダ属性:
 
 `file-copier`
 
-:    specifies the provider by name for a non-local node.
+:    ローカルではないノードに対してプロバイダ名を指定します。
 
 `local-file-copier`
 
-:    specifies the provider by name for the local (server) node.
+:    ローカル（Rundeck サーバー）ノードに対してプロバイダ名を指定します。
 
-Example Node in YAML specifying `stub` NodeExecutor and FileCopier:
+サンプルのノードに対して、`stub` というノード実行プロバイダとファイルコピープロバイダを YAML フォーマットで指定した例になります:
 
     remotehost:
         hostname: remotehost
         node-executor: stub
         file-copier: stub
 
-#### Project or Framework Scope
+#### プロジェクトまたはフレームワークのスコープ
 
 *Node Executor*
 
-You can define the default connection providers to use for nodes at either the Project or
-Framework scope (or both).  To do so, configure any of the following properties
-in the `project.properties` or the `framework.properties` files.  
+プロジェクトまたはフレームワーク（または両方）のスコープにてノード郡を利用するためにデフォルトで接続されるプロバイダを定義できます。そのために、`project.properties` または `framework.properties` ファイルに、次のいずれかのプロパティを設定します。
 
 `service.NodeExecutor.default.provider`
 
-:   Specifies the default NodeExecutor provider for remote nodes
+:   リモートノードに対してデフォルトのノード実行プロバイダを指定します。
 
 `service.NodeExecutor.default.local.provider`
 
-:   Specifies the default Node Executor provider for the  local node.
+:   ローカルノードに対してデフォルトのノード実行プロバイダを指定します。
 
 *File Copier*
 
 `service.FileCopier.default.provider`
 
-:   Specifies the default File Copier provider for remote nodes.
+:   リモートノードに対してデフォルトのファイルコピープロバイダを指定します。
 
 `service.FileCopier.default.local.provider`
 
-:   Specifies the default File Copier provider for the local node.
+:   ローカルノードに対してデフォルトのファイルコピープロバイダを指定します。
 
-Example `project.properties` to set default local providers to `stub`:
+サンプルの `project.properties` に `stub` というデフォルトのローカルプロバイダを設定する例になります：
 
     service.NodeExecutor.default.local.provider=stub
     service.FileCopier.default.local.provider=stub
 
-### Resource Model Sources
+### リソースモデルソース
 
-The *Resource Model Sources* providers can be configured for a single project 
-in the `project.properties` file.
+*リソースモデルソース*プロバイダはあるひとつのプロジェクト内の `project.properties` ファイルに対して設定することができます。
 
-You can define multiple Resource Model Sources for the project, and can mix and match
-the specific providers depending on your needs.
+そのプロジェクトに対して複数のリソースモデルソースの定義もできます。また必要に応じて指定した指定するプロバイダを混ぜたり組み合わせたり出来ます。
 
-When you define multiple Source providers in a project, then the resulting set of Nodes will 
-effectively be a merge of all the sources, in the order in which they are declared. This
-means that if two or more Sources provide a definition of a node with the same name, then
-the definition from lowest Source in the list will be used.
+あるプロジェクトで複数のソースプロバイダを定義しているときは、全てのソースのマージがノードセットの結果になり、それらは定義にされた順に並べられます。これは 2 つまたは複数のソースが同じ名前でノードを定義しているとき、一番下にある定義がリストに用いられるということを意味します。
 
-The order that the providers are loaded (and thus the nodes are merged) is:
+プロバイダが読み込まれノードがマージされたときの順番は:
 
-1. `project.resources.file`: A File Model Source with default configuration.
-2. `project.resources.url`: A URL Model Source with default configuration. (optional)
-3. All `resources.source.N` configurations in order starting at 1
+1.  `project.resources.file`: デフォルト設定のファイルモデルソース
+2.  `project.resources.url` : デフォルト設定の URL モデルソース（オプション）
+3.  All `resources.source.N`: 1 から始まる順番の設定
 
-#### Resource Model Source configuration
+#### リソースモデルソースの設定
 
-The `project.properties` file for each project allows you to configure the Resource Model Sources in these ways:
+以下の方法で各プロジェクトの `project.properties` ファイルにてリソースモデルソースの設定ができます:
 
-* Define `project.resources.file` - this file path is used as a File Source path, with *autogeneration* and *includeServerNode* both true.
-* Define `project.resources.url` - this URL is used as a URL Source url, with caching enabled
+1.  `project.resources.file` を定義する - このファイルパスはあるファイルソースパスとして用いられ、*autogenration* と *includeServerNode* はともに true になっています。
+2.  `project.resources.url` を定義する - この URL は URL ソース url として用いられ、キャッシュは ON になっています。
 
-You may also define a list of more sources in this way:
+このようにより多くのソースのリストから定義することも可能です:
 
-Starting at index `1`, define these properties for your Source numbered `N`:
+インデックスは `1` から始まり、ナンバー `N` のソースについて以下のようなプロパティを定義します:
 
     resources.source.N.type=<provider-name>
     resources.source.N.config.<property>=<value>
     resources.source.N.config.<property2>=<value2>
     ...
 
-Using one of the available Resource Model Source provider names for the `<provider-name>` value. For each Resource Model Source provider, 
-you can specify the configuration properties for the source.
+`<provider-name>` に有効なリソースモデルプロバイダ名を指定します。各リソースモデルプロバイダごとに、ソースについてのプロパティ設定が行えます。
 
-Example project.properties configuration of a default File provider, and two other providers:
+デフォルトのファイルプロバイダとその他 2 つのプロバイダの `project.properties` 設定の例:
 
     project.resources.file=/home/rundeck/projects/example/etc/resources.xml
     
