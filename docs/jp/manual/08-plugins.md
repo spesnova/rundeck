@@ -42,15 +42,15 @@ Rundeck にはいくつかの "built-in" プロバイダと、"included" プラ�
 
 Rundeck は様々なサービスで動作させるためにいくつかの異なるプラグインタイプをサポートしています。
 
-### ノード実行 プラグイン
+### Node-Executor プラグイン
 
 ノード上でのコマンド実行や、ノードへのファイルコピーの方法について定義するプラグインです。
 
 より詳細な情報については:
 
-*   設定: [ノード実行サービス](plugins.html#ノード実行サービス)
-*   ライフサイクル: [ノード実行サービスプロバイダが実行されたとき](plugins.html#ノード実行サービスプロバイダが実行されたとき)
-*   組み込みプラグイン: [ノード実行サービス](plugins.html#ノード実行サービス)
+*   設定: [Node Executor サービス](plugins.html#node+executor+サービス)
+*   ライフサイクル: [Node Executor サービスプロバイダが実行されたとき](plugins.html#node+executor+サービスプロバイダが実行されたとき)
+*   組み込みプラグイン: [Node Executor サービス](plugins.html#node+executor+サービス)
 *   付属プラグイン: [プリインストールプラグイン](plugins.html#プリインストールプラグイン)
 
 ### リソースモデルソース プラグイン
@@ -84,9 +84,9 @@ Rundeck のコアは、複数ノードに対して様々なワークフロー・
 
 *サービスカテゴリ*:
 
-1.  **ノード実行サービス** - これらのサービスの各プロバイダはある一つのノード定義の条件下で処理を行います。そしてノードの範囲も設定可能です:
+1.  **Node Executor サービス** - これらのサービスの各プロバイダはある一つのノード定義の条件下で処理を行います。そしてノードの範囲も設定可能です:
 
-    1.  ノード実行 - これらのプロバイダでは、（ローカルまたはリモートの）あるノードに対して実行するコマンドを定義します。
+    1.  Node Executor 実行 - これらのプロバイダでは、（ローカルまたはリモートの）あるノードに対して実行するコマンドを定義します。
     2.  ファイルコピー - これらのプロバイダではあるノードに対してファイルをどのようにコピーするか定義します。
 
 2.  **プロジェクトサービス** 
@@ -104,9 +104,9 @@ Rundeck のコアは、複数ノードに対して様々なワークフロー・
 
 ## プロバイダを使う
 
-### ノード実行サービス
+### Node Executor サービス
 
-ノード実行とファイルコピーという 2 つの*ノードサービス*は共に似たような設定がされています。これは特定のノードに対して行われるよう設定されているか、またはあるプロジェクトまたはシステム用のデフォルトプロバイダとして設定されています。
+Node Executor と File Copier という 2 つの*ノードサービス*は共に似たような設定がされています。これは特定のノードに対して行われるよう設定されているか、またはあるプロジェクトまたはシステム用のデフォルトプロバイダとして設定されています。
 
 複数プロバイダが定義される場合には以下のようにほとんどの定義で各プロバイダに優先順位を付けます:
 
@@ -120,7 +120,7 @@ Rundeck のコアは、複数ノードに対して様々なワークフロー・
 
 To enable a provider for a node, add an attribute to the node definition.
 
-*ノード実行プロバイダ属性*:
+*Node Executor プロバイダ属性*:
 
 `node-executor`
 
@@ -140,7 +140,7 @@ To enable a provider for a node, add an attribute to the node definition.
 
 :    ローカル（Rundeck サーバー）ノードに対してプロバイダ名を指定します。
 
-サンプルのノードに対して、`stub` というノード実行プロバイダとファイルコピープロバイダを YAML フォーマットで指定した例になります:
+サンプルのノードに対して、`stub` という Node Executor プロバイダと File Copier プロバイダを YAML フォーマットで指定した例になります:
 
     remotehost:
         hostname: remotehost
@@ -155,21 +155,21 @@ To enable a provider for a node, add an attribute to the node definition.
 
 `service.NodeExecutor.default.provider`
 
-:   リモートノードに対してデフォルトのノード実行プロバイダを指定します。
+:   リモートノードに対してデフォルトの Node Executor プロバイダを指定します。
 
 `service.NodeExecutor.default.local.provider`
 
-:   ローカルノードに対してデフォルトのノード実行プロバイダを指定します。
+:   ローカルノードに対してデフォルトの Node Executor プロバイダを指定します。
 
 *File Copier*
 
 `service.FileCopier.default.provider`
 
-:   リモートノードに対してデフォルトのファイルコピープロバイダを指定します。
+:   リモートノードに対してデフォルトの File Copier プロバイダを指定します。
 
 `service.FileCopier.default.local.provider`
 
-:   ローカルノードに対してデフォルトのファイルコピープロバイダを指定します。
+:   ローカルノードに対してデフォルトの File Copier プロバイダを指定します。
 
 サンプルの `project.properties` に `stub` というデフォルトのローカルプロバイダを設定する例になります：
 
@@ -218,104 +218,92 @@ To enable a provider for a node, add an attribute to the node definition.
     resources.source.2.type=directory
     resources.source.2.directory=/home/rundeck/projects/example/resources
 
-### Resource Format Generators and Parsers
+### リソースフォーマットジェネレータとパーサ
 
-Resource Format Generators and Parsers define support for file formats that can
-be generated from or parsed into a set of Resource Node definitions.
+リソースフォーマットジェネレータとパーサはリソースノードの定義セットにパースされるまたは、そこからジェネレートされるファイルフォーマットについてのサポートを定義します。
 
-These are used by other parts of the system, such as the Resource Model Sources.
+これらはリソースモデルソースといった Rundeck の他のパーツから使われます。
 
-There is no configuration necessary to use these providers, however the specific
-Provider Name that each generator and parser defines has to be known in order
-to make use of the provider.  The specific Provider Name is used as the 
-"format name" when you want to use the parser or generator.
+これらのプロバイダを使うのに一切設定は必要ありません。しかし各ジェネレータとパーサといった特定のプロバイダに関してはプロバイダを利用可能な状態にするためにプロバイダ名を知らせる必要があります。パーサまたはジェネレータを使いたいときその特定のプロバイダ名は "フォーマット名"として使われます。
 
-For example, to enable a particular Resource Format parser to be used by a File
-Resource Model Source (see [File Resource Model Source Configuration](plugins.html#file-resource-model-source-configuration)), you should specify
-the Provider Name for the parser as the format for the source:
+例えば、あるファイルリソースモデルソース（[ファイルリソースモデルソース設定](plugins.html#file-resource-model-source-configuration)を参照してください）に利用される特定のリソースフォーマットパーサを利用可能な状態にするために、そのプロバイダ名を指定します:
 
     resources.source.1.format=myformat
 
+これで "myformat" プロバイダを使うという指定になります。
 This would specify the use of "myformat" provider.
 
-In other cases, the exact name of the provider may not be known (for example 
-when loading content from a remote URL).  Each Generator and Parser must define
-a list of MIME Type strings and file extensions that they support. These 
-are used to determine which parser/generator is to be used.
+別のケースでは、実際のプロバイダ名は知られていないかもしれません（例えば、リモート URL からコンテンツを読み込む場合）。各ジェネレータとパーサはある MIME タイプとサポートされているファイルエクステンションのリストを定義していなければいけません。これらはどのパーサ/ジェネレータを使うか決める際に利用されます。
 
-## When Node Execution Service providers are invoked
+## Node Executor サービスプロバイダが呼ばれたとき
 
-Rundeck executes Command items on Nodes.  The command may be part of a Workflow as defined
-in a Job, and it may be executed multiple times on different nodes.
+Rundeck がノード上でコマンドアイテムを実行します。そのコマンドはジョブ内のあるワークフローの一部かもしれません、また複数ノードに対して何度も実行されるコマンドかもしれません。
 
-Currently three "kinds" of Command items can be specified in Workflows:
+今のところワークフローにて指定できるコマンドアイテムは 3 "種類" あります:
 
-1. "exec" commands - simple system command strings
-2. "script" commands - either embedded script content, or server-local script 
-files can be sent to the specified node and then executed with a set of input arguments.
-3. "jobref" commands - references to other Jobs by name that will be executed with
-a set of input arguments.
+1. "exec" コマンド - シンプルなシステムコマンド
+2. "script" コマンド - 組み込みスクリプトファイルや Rundeck サーバーに置いてあるスクリプトファイルが指定されたノードに配布され入力された引数セットを用いて実行されます。
+3. "jobref" コマンド - 入力された引数セットを用いて実行される他のジョブを名前から参照する
 
-Rundeck uses the NodeExecutor and FileCopier services as part of the process of 
-executing these command types.
+Rundeck はこれらのコマンドタイプを実行するプロセスの一部として Node Executor サービスと File Copier サービスを使います。
 
-The procedure for executing an "exec" command is:
+"exec" コマンドを実行する一連の処理は以下のようになります:
 
-1. load the NodeExecutor provider for the node and context
-2. call the NodeExecutor#executeCommand method
+1.  指定されたノードとコンテキストに合わせて Node Executor プロバイダを読み込みます
+2.  `NodeExecutor#executeCommand` メソッドを呼びます
 
-The procedure for executing a "script" command is:
+"script" コマンドを実行する一連の処理は以下のようになります:
 
-1. load the FileCopier provider for the node and context
-2. call the FileCopier#copy* method 
-3. load the NodeExecutor provider for the node and context
-4. Possibly execute an intermediate command (such as "chmod +x" on the copied file)
-5. execute the NodeExecutor#executeCommand method, passing the filepath of the 
-  copied file, and any arguments to the script command.
+1.  指定されたノードとコンテキストに合わせて File Copier プロバイダを読み込みます
+2.  `FileCopier#copy*` メソッドを呼び出します
+3.  `NodeExecutor` メソッドを呼び出します
+4.  （ファイルをコピーする際の "chmod +x" のような）途中に行うコマンドを実行する場合もあります
+5.  コピーするファイルのファイルパスと、スクリプトコマンドにて実行するあらゆる引数を渡して `NodeExecutor#executeCommand` メソッドを実行します
 
-## Built-in providers
+## ビルトインプロバイダ
 
-Rundeck uses a few built-in providers to provide the default service:
+Rundeck がデフォルトサービスを提供するためのわずかなビルトインプロバイダを使います。
 
-### Node Execution services
+### Node Executor サービス
 
-For NodeExecutor, these providers:
+Node Executor プロバイダ:
 
 `local`
 
-:   local execution of a command 
+:   ローカルでのコマンド実行。
 
 `jsch-ssh`
 
-:   remote execution of a command via SSH, requiring the "hostname", and "username" attributes on a node.
+:   SSH 経由のコマンドのリモート実行。node の attribute "hostname" と "username" を必要とします。
+remote execution of a command via SSH, requiring the "hostname", and "username" attributes on a node.
 
-For FileCopier, these providers:
+File Copier プロバイダ:
 
 `local`
 
-:   creates a local temp file for a script
+:   あるスクリプト用に一時的なローカルファイルを作ります
 
 `jsch-scp`
 
-:   remote copy of a command via SCP, requiring the "hostname" and  "username" attributes on a node.
+:   SCP 経由のリモートへのコマンドのコピー。node の attribute "hostname" と "username" を必要とします。
 
-#### SSH Provider
+#### SSH プロバイダ
 
-The SSH Node Executor and File Copier are included as the default providers for Rundeck.
+SSH Node Executor と File Copier は Rundeck にデフォルトで付属しています。
 
-Out of the box typical node configuration to make use of these is simple. 
+それらを使うための典型的なノード設定はシンプルです。
 
-* Set the `hostname` attribute for the nodes.  It can be in the format "hostname:port" to indicate that a non-default port should be used. The default port is 22.
-* Set the `username` attribute for the nodes to the username to connect to the remote node.
-* set up public/private key authentication from the Rundeck server to the nodes
+* ノードの `hostname` attribute をセットします。デフォルトポート 22 番以外を使っている場合は "hostname:port" というフォーマットも可能です。
+* リモートノードへ接続する際に用いる username をノードの `username` attribute にセットします。
+* Rundeck サーバーからノード群に対して公開鍵/秘密鍵認証のセットアップを行います
 
-This will allow remote command and script execution on the nodes.
+これでノード上でリモートコマンドを実行したり、スクリプトを実行できるようになります。
 
-See below for more configuration options.
+設定のオプションについては以下を参照してください。
 
-**Sudo Password Authentication**
+**Sudo パスワード認証**
 
-The SSH Provider also includes support for a secondary Sudo Password Authentication. This simulates a user writing a password to the terminal into a password prompt when invoking a "sudo" command that requires password authentication.
+SSH プロバイダは、補助的に Sudo パスワード認証もサポートしています。これは "sudo" コマンドがパスワード認証を必要としたときに、あるユーザーがパスワードをターミナルのパスワードプロンプトに入力するといった認証をシミュレートするものです。
 
 ##### Configuring SCP File Copier
 
