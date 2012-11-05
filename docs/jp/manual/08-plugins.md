@@ -305,51 +305,52 @@ SSH Node Executor と File Copier は Rundeck にデフォルトで付属して�
 
 SSH プロバイダは、補助的に Sudo パスワード認証もサポートしています。これは "sudo" コマンドがパスワード認証を必要としたときに、あるユーザーがパスワードをターミナルのパスワードプロンプトに入力するといった認証をシミュレートするものです。
 
-##### Configuring SCP File Copier
+##### SCP File Copier の設定
 
+一般的な SSH 設定の記述に加えて、いくつか SCP 用に追加設定があります。
 In addition to the general SSH configuration mentioned for in this section, some additional configuration can be done for SCP. 
 
-When a Script is executed on a remote node, it is copied over via SCP first, and then executed.  In addition to the SSH connection properties, these node attributes
-can be configured for SCP:
+あるリモートノード上であるスクリプトが実行されたとき、まず SCP 経由でスクリプトファイルをコピーし、それから実行します。SSH コネクションプロパティに加えて SCP 用に以下のような node attribute を設定できます。
 
-* `file-copy-destination-dir`: The directory on the remote node to copy the script file to before executing it. The default value is `C:/WINDOWS/TEMP/` on Windows nodes, and `/tmp` for other nodes.
-* `osFamily`: specify "windows" for windows nodes.
+*   `file-copy-destination-dir`: 実行前にそのスクリプトファイルをコピーする先となるリモートノード上のディレクトリ。デフォルトの値は Windowns ノードだと `C:/WINDOWS/TEMP` 、それ以外は `/tmp` となります。
+*   `osFamily`: windows ノード用には "windows" と指定します。
 
-##### Configuring SSH Authentication type
+##### SSH 認証タイプの設定
 
-SSH authentication can be done in two ways, via password or public/private key.
+SSH 認証は パスワードまたは公開鍵/秘密鍵認証の 2 つの方法で行われます。
 
-By default, public/private key is used, but this can be changed on a node, project, or framework scope.
+デフォルトでは、公開鍵/秘密鍵認証方式が使われますが、フレームワークスコープ、プロジェクト、ノードによって変更できます。
 
-The mechanism used is determined by the `ssh-authentication` property.  This property can have two different values:
+どちらのメカニズムが使われるかは `ssh-authentication` プロパティによって決められます。このプロパティはどちらか 2 つの値を持ちます:
 
-* `password`
-* `privateKey` (default)
+*   `password`
+*   `privateKey` （デフォルト）
 
-When connecting to a particular Node, this sequence is used to determine the correct authentication mechanism:
+ある特定のノードに接続した時、正しい認証メカニズムが選ばれるようこのシーケンスが使われます。
 
-1. **Node level**: `ssh-authentication` attribute on the Node. Applies only to the target node.
-2. **Project level**: `project.ssh-authentication` property in `project.properties`.  Applies to any project node by default.
-3. **Rundeck level**: `framework.ssh-authentication` property in `framework.properties`. Applies to all projects by default.
+1. **ノードレベル**: ノード上の `ssh-authentication` プロパティ。attribute ターゲットノードにだけ適用します。
+2. **プロジェクトレベル**: `project.properties` 内の `project.ssh-authentication` プロパティ。 `project.properties`  デフォルトでプロジェクト配下の全ノードに適用します。
+3. **Rundeck レベル**: `framework.properties` 内の `framework.ssh-authentication` プロパティ。デフォルトで全てのプロジェクトのノードに適用します。
 
-If none of those values are set, then the default public/private key authentication is used.
+これらの値が一切セットされてない場合はデフォルトで公開鍵/秘密鍵認証方式が使われます。
 
-##### Configuring SSH Username
+##### SSH username 
+の設定
 
-The username used to connect via SSH is taken from the `username` Node attribute:
+SSH 経由で接続するための username は、node attribute の `username` から取得します:
 
-* `username="user1"`
+*   `username="user1"`
 
-This value can also include a property reference if you want to dynamically change it, for example to the name of the current Rundeck user, or the username submitted as a Job Option value:
+動的にこの値を変化させたい場合はプロパティ参照を組み込むこともできます。例えば、現在の Rundeck 利用者またはジョブのオプション値として username を取得して参照するといったことです:
 
-* `${job.username}` - uses the username of the user executing the Rundeck execution.
-* `${option.someUsername}` - uses the value of a job option named "someUsername".
+*   `${job.username}` - Rundeck でジョブを実行している username を使います
+*   `${option.someUsername}` - "someUsername" というジョブオプションの値を使います
 
-If the `username` node attribute is not set, then the static value provided via project or framework configuration is used. The username for a node is determined by looking for a value in this order:
+もし node attribute `username` がセットされていない場合はプロジェクトまたはフレームワーク設定で使われてる静的な値を使います。あるノードへの接続時の username は下記の順番で値を探しにいきます:
 
-1. **Node level**: `username` node attribute. Can contain property references to dynamically set it from Option or Execution values.
-2. **Project level**: `project.ssh.user` property in `project.properties` file for the project.
-3. **Rundeck level**: `framework.ssh.user` property in `framework.properties` file for the Rundeck installation.
+1.  **Node level**: node attribute `username` 。実行時の値やオプションを参照出来る場合は利用します
+2.  **Project level**: プロジェクト内の `project.properties` ファイル内の `project.ssh.user` プロパティ
+3.  **Rundeck level**: `framework.properties` ファイル内の `framework.ssh.user` プロパティ
 
 ##### Configuring SSH private keys
 
