@@ -231,7 +231,6 @@ To enable a provider for a node, add an attribute to the node definition.
     resources.source.1.format=myformat
 
 これで "myformat" プロバイダを使うという指定になります。
-This would specify the use of "myformat" provider.
 
 別のケースでは、実際のプロバイダ名は知られていないかもしれません（例えば、リモート URL からコンテンツを読み込む場合）。各ジェネレータとパーサはある MIME タイプとサポートされているファイルエクステンションのリストを定義していなければいけません。これらはどのパーサ/ジェネレータを使うか決める際に利用されます。
 
@@ -275,7 +274,6 @@ Node Executor プロバイダ:
 `jsch-ssh`
 
 :   SSH 経由のコマンドのリモート実行。node の attribute "hostname" と "username" を必要とします。
-remote execution of a command via SSH, requiring the "hostname", and "username" attributes on a node.
 
 File Copier プロバイダ:
 
@@ -352,46 +350,46 @@ SSH 経由で接続するための username は、node attribute の `username` 
 2.  **Project level**: プロジェクト内の `project.properties` ファイル内の `project.ssh.user` プロパティ
 3.  **Rundeck level**: `framework.properties` ファイル内の `framework.ssh.user` プロパティ
 
-##### Configuring SSH private keys
+##### SSH 秘密鍵の設定
 
-The default authentication mechanism is public/private key.
+デフォルトの認証メカニズムは公開鍵/秘密鍵認証です。
 
-The built-in SSH connector allows the private key to be specified in several different ways.  You can configure it per-node, per-project, or per-Rundeck instance.
+ビルトイン SSH コネクターにより秘密鍵を数種類の方法でできます。ノード毎、プロジェクト毎、Rundeck インスタンスごとにその方法を変えられます。
 
-When connecting to the remote node, Rundeck will look for a property/attribute specifying the location of the private key file, in this order, with the first match having precedence:
+リモートノードに接続する時に、Rundeck は秘密鍵ファイルの場所を示したあるプロパティ/attribute を探します。その際、以下の順番で最初にヒットするまで探します:
 
-1. **Node level**: `ssh-keypath` attribute on the Node. Applies only to the target node.
-2. **Project level**: `project.ssh-keypath` property in `project.properties`.  Applies to any project node by default.
-3. **Rundeck level**: `framework.ssh-keypath` property in `framework.properties`. Applies to all projects by default.
-4. **Rundeck level**:  `framework.ssh.keypath` property in `framework.properties`. Applies to all projects by default (included for compatibility with Rundeck < 1.3). (default value: `~/.ssh/id_rsa`).
+1. **Node レベル**: ノード上の `ssh-keypath` attribute 。ターゲットノードにだけ適用します。
+2. **Project レベル**: `project.properties` 内の `project.ssh-keypath` プロパティ。 デフォルトでプロジェクト配下の全ノードに適用します。
+3. **Rundeck レベル**: `framework.properties` 内の `framework.ssh-keypath` プロパティ. デフォルトで全プロジェクトに適用します。
+4. **Rundeck レベル**:  `framework.properties` 内の `framework.ssh.keypath` プロパティ。デフォルトで全プロジェクトに適用します。（1.3 より前の Rundeck にも互換性があります）（デフォルトの値は、`~/.ssh/id_rsa`）
 
-If you private key is encrypted with a passphrase, then you can use a "Secure Option" to prompt the user to enter the passphrase when executing on the Node.  See below.
+暗号化したパスフレーズを使う秘密鍵の場合は、ノードで実行する際にパスフレーズを入力するプロンプトを利用する "Secure Option" が利用できます。下記の項目を参照してください。
 
-##### Configuring SSH Private Key Passphrase
+##### SSH 秘密鍵パスフレーズの設定
 
-Using a passphrase for privateKey authentication works in the following way:
+パスフレーズを使った秘密鍵認証は以下のように動作します:
 
-* A Job must be defined specifying a Secure Option to prompt the user for the key's passphrase.
-* Target nodes must be configured to use privateKey authentication.
-* When the user executes the Job, they are prompted for the key's passphrase.  The Secure Option value for the passphrase is not stored in the database, and is used only for that execution.
+*   鍵のパスフレーズを入力させるプロンプトを出すようジョブに Secure Option についての定義がされていなければなりません。
+*   ターゲットノードでは秘密鍵認証を使うよう設定されてなければなりません。
+*   ユーザがジョブを実行するとき、パスフレーズ入力用のプロンプトが表示されます。Secure Option の値はデータベースには保存されず、その実行にだけ利用されます。
 
-Therefore Private Key Passphrase authentication has several requirements and some limitations:
+さらに秘密鍵パスフレーズ認証にはいくつかの必要事項と制限があります:
 
-1. Private Key-authenticated nodes requiring passphrases can only be executed on via a defined Job, not via Ad-hoc commands (yet).
-2. Each Job that will execute on such Nodes must define a Secure Option to prompt the user for the key's passphrase before execution.
-3. All Nodes using passphrase protected private keys for a Job must have a matching Secure Option defined, or may use the same option name (or the default) if they share the key's passphrase (e.g. using the same private key).
+1.  秘密鍵認証にてパスフレーズを要求するノードには予め定義されたジョブを通してのみ実行が可能です。アドホックコマンドでは実行できません。（今のところ）
+2.  そのようなノード上で実行される各ジョブには実行前にパスフレーズを入力してもらうよう Secure Option の定義がされていなければなりません。
+3.  秘密鍵パスフレーズ認証を使う全てのノードでは入力するパスフレーズと定義された Secure Option 定義とがマッチする必要があります。または同じパスフレーズを共有して使う場合は同じ Option 名（またはデフォルトのまま）を使う必要があります。（例えば、同じ秘密鍵を共有して使う場合など）
 
-Passphrases are input either via the GUI or arguments to the job if executed via CLI or API.
+パスフレーズは GUI ・CUI どちらからも入力できます。CUI または API 経由でジョブを実行したい場合はジョブの引数としてパスフレーズを入力します。
 
-To enable SSH Private Key authentication, first make sure the `ssh-authentication` value is set as described in [Configuring SSH Authentication type](plugins.html#configuring-ssh-authentication-type).  Second, configure the path to the private key file, as described in [Configuring SSH private keys](plugins.html#configuring-ssh-private-keys).
+SSH 秘密鍵認証を利用可能にするために、まず `ssh-authentication` の値が [SSH 認証タイプの設定](plugins.html#ssh-認証タイプの設定)にて説明されているとおりに設定されてるか確かめてください。次に、[SSH 秘密鍵の設定](plugins.html#ssh-秘密鍵の設定)にて説明されているとおりに秘密鍵ファイルのパスが設定されているか確かめてください。
 
-Next, configure a Job, and include an Option definition where `secureInput` is set to `true`.  The name of this option can be anything you want, but the default value of `sshKeyPassphrase` assumed by the node configuration is easiest.
+今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、node 設定でデフォルト値として使われている `sshKeyPassphrase` を使うのが一番簡単です。
 
-If the value is not `sshKeyPassphrase`, then make sure to set the following attribute on each Node for password authentication:
+もしオプション名が `sshKeyPassphrase` で無い場合は、以下の attribute がセットされているか確かめてください:
 
-* `ssh-key-passphrase-option` = "`option.NAME`" where NAME is the name of the Job's secure option.
+*   `ssh-key-passphrase-option` = "`option.NAME`" `NAME` 部分にジョブのセキュアオプションの名前が入ります。
 
-An example Node and Job option configuration are below:
+ノードとジョブオプションの設定の例です:
 
     <node name="egon" description="egon" osFamily="unix"
         username="rundeck"
@@ -400,7 +398,7 @@ An example Node and Job option configuration are below:
         ssh-authentication="privateKey"
         ssh-password-option="option.sshKeyPassphrase" />
 
-Job:
+ジョブ:
 
     <joblist>
         <job>
@@ -416,27 +414,29 @@ Job:
         </job>
     </joblist>
 
-##### Configuring SSH Password Authentication
+##### SSH パスワード認証の設定
 
-Password authentication works in the following way:
+パスワード認証は以下のように動作します:
 
-* A Job must be defined specifying a Secure Option to prompt the user for the password
-* Target nodes must be configured for password authentication
-* When the user executes the Job, they are prompted for the password.  The Secure Option value for the password is not stored in the database, and is used only for that execution.
+*   ジョブにはユーザにパスワードを要求するセキュアオプションが定義されていなければいけません。
+*   ターゲットノードはパスワード認証するよう設定されていなければいけません。
+*   ユーザがジョブを実行する際、パスワード入力用にプロンプトを表示します。パスワード用セキュアオプションの値はデータベースには保存されず、その実行のみに使われます。
 
-Therefore Password authentication has several requirements and some limitations:
-
-1. Password-authenticated nodes can only be executed on via a defined Job, not via Ad-hoc commands (yet).
-2. Each Job that will execute on password-authenticated Nodes must define a Secure Option to prompt the user for the password before execution.
+1.  パスワード認証を行うノードには予め定義されたジョブを通してのみ実行が可能です。アドホックコマンドでは実行できます。（今のところ）
+2.  そのようなノード上で実行される各ジョブには実行前にパスワードを入力してもらうよう Secure Option の定義がされていなければなりません。
 3. All Nodes using password authentication for a Job must have an equivalent Secure Option defined, or may use the same option name (or the default) if they share authentication passwords.
+3.  パスワード認証を使う全てのノードでは入力するパスワードと定義された Secure Option 定義とがマッチする必要があります。または同じパスワードを共有して使う場合は同じ Option 名（またはデフォルトのまま）を使う必要があります。（例えば、同じ秘密鍵を共有して使う場合など）
 
-Passwords for the nodes are input either via the GUI or arguments to the job if executed via CLI or API.
+パスワードは GUI・CUI どちらからも入力できます。CUI または API 経由でジョブを実行したい場合はジョブの引数としてパスワードを入力します。
 
-To enable SSH Password authentication, first make sure the `ssh-authentication` value is set as described in [Configuring SSH Authentication type](plugins.html#configuring-ssh-authentication-type).
+パスワード認証を利用可能にするために、まず `ssh-authentication` の値を [SSH 認証タイプの設定](plugins.html#ssh-認証タイプの設定)にて説明されているとおりに設定されているか確かめてください。
 
+次にジョブの設定をします。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、node 設定でデフォルト値として使われている
 Next, configure a Job, and include an Option definition where `secureInput` is set to `true`.  The name of this option can be anything you want, but the default value of `sshPassword` assumed by the node configuration is easiest.
 
-If the value is not `sshPassword`, then make sure to set the following attribute on each Node for password authentication:
+SSH 秘密鍵認証を利用可能にするために、まず `ssh-authentication` の値が [SSH 認証タイプの設定](plugins.html#ssh-認証タイプの設定)にて説明されているとおりに設定されてるか確かめてください。次に、[SSH 秘密鍵の設定](plugins.html#ssh-秘密鍵の設定)にて説明されているとおりに秘密鍵ファイルのパスが設定されているか確かめてください。
+
+今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、node 設定でデフォルト値として使われている `sshKeyPassphrase` を使うのが一番簡単です。If the value is not `sshPassword`, then make sure to set the following attribute on each Node for password authentication:
 
 * `ssh-password-option` = "`option.NAME`" where NAME is the name of the Job's secure option.
 
