@@ -363,7 +363,7 @@ SSH 経由で接続するための username は、node attribute の `username` 
 3. **Rundeck レベル**: `framework.properties` 内の `framework.ssh-keypath` プロパティ. デフォルトで全プロジェクトに適用します。
 4. **Rundeck レベル**:  `framework.properties` 内の `framework.ssh.keypath` プロパティ。デフォルトで全プロジェクトに適用します。（1.3 より前の Rundeck にも互換性があります）（デフォルトの値は、`~/.ssh/id_rsa`）
 
-暗号化したパスフレーズを使う秘密鍵の場合は、ノードで実行する際にパスフレーズを入力するプロンプトを利用する "Secure Option" が利用できます。下記の項目を参照してください。
+暗号化したパスフレーズを使う秘密鍵の場合は、ノードで実行する際にパスフレーズを入力させるためにプロンプトをすする "Secure Option" が利用できます。下記の項目を参照してください。
 
 ##### SSH 秘密鍵パスフレーズの設定
 
@@ -436,11 +436,13 @@ Next, configure a Job, and include an Option definition where `secureInput` is s
 
 SSH 秘密鍵認証を利用可能にするために、まず `ssh-authentication` の値が [SSH 認証タイプの設定](plugins.html#ssh-認証タイプの設定)にて説明されているとおりに設定されてるか確かめてください。次に、[SSH 秘密鍵の設定](plugins.html#ssh-秘密鍵の設定)にて説明されているとおりに秘密鍵ファイルのパスが設定されているか確かめてください。
 
-今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、node 設定でデフォルト値として使われている `sshKeyPassphrase` を使うのが一番簡単です。If the value is not `sshPassword`, then make sure to set the following attribute on each Node for password authentication:
+今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、node 設定でデフォルト値として使われている `sshKeyPassphrase` を使うのが一番簡単です。
 
-* `ssh-password-option` = "`option.NAME`" where NAME is the name of the Job's secure option.
+もしオプション名が `sshKeyPassword` で無い場合は、以下の attribute が各ノードにセットされているか確かめてください:
 
-An example Node and Job option configuration are below:
+*   `ssh-password-option` = "`option.NAME`" : `NAME` 部分にジョブのセキュアオプションの名前が入ります。
+
+ノードとジョブオプションの設定の例です:
 
     <node name="egon" description="egon" osFamily="unix"
         username="rundeck"
@@ -448,7 +450,7 @@ An example Node and Job option configuration are below:
         ssh-authentication="password"
         ssh-password-option="option.sshPassword1" />
 
-Job:
+ジョブ:
 
     <joblist>
         <job>
@@ -463,23 +465,22 @@ Job:
         </job>
     </joblist>
 
+##### Sudo パスワード認証の設定
 
-##### Configuring Secondary Sudo Password Authentication
+SSH プロバイダは補助的に Sudo パスワード認証のメカニズムをサポートしています。あなたの環境におけるセキュリティ要件で一般的な "rundeck" アカウントではなくそれぞれのユーザアカウントを使って SSH 接続させ、"sudo" レベルのコマンドを実行時にパスワードを要求するような場合に便利です。
 
-The SSH provider supports a secondary authentication mechanism: Sudo password authentication.  This is useful if your security requirements are such that you require the SSH connection to be under a specific user's account instead of a generic "rundeck" account, and you still need to allow "sudo" level commands to be executed requiring a password to be entered.
+このメカニズムは以下のように動作します:
 
-This works in the following way:
+*   ジョブの実行時に、ユーザに Sudo パスワードを入力するようプロンプトが出されます。
+*   SSH 経由でリモートノードに接続後、例えば "sudo -u otheruser /sbin/some-command" のようなコマンドが "sudo" 認証を要求します。
+*   リモートノードがユーザの Sudo パスワードの入力を促します。
+*   SSH プロバイダがリモートノードにパスワードを入力します。
+*   ユーザがエンターを押すと sudo コマンドが実行されます。
 
-* On Job execution, the user is prompted to enter a Sudo password
-* After connecting to the remote node via SSH, a command requiring "sudo" authentication is issued, such as "sudo -u otheruser /sbin/some-command"
-* The remote node will prompt for a sudo password, expecting user input
-* The SSH Provider will write the password to the remote node
-* The sudo command will execute as if a user had entered the command
+SSH パスワード認証に同じように、Sudo パスワード認証にも必要事項があります:
 
-Similarly to SSH Password authentication, Sudo Password Authentication requires:
-
-* A Job must be defined specifying a Secure Option to prompt the user for the password
-* Target nodes must be configured for Sudo authentication
+*   ジョブにはユーザにパスワードを入力させるようプロンプトを出すセキュアオプションの定義がされていなければなりません。
+*   ターゲットノードは Sudo 認証を行うよう設定されていなければなりません。
 * When the user executes the Job, they are prompted for the password.  The Secure Option value for the password is not stored in the database, and is used only for that execution.
 
 Therefore Sudo Password Authentication has several requirements and some limitations:
