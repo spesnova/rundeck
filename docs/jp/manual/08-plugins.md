@@ -273,7 +273,7 @@ Node Executor プロバイダ:
 
 `jsch-ssh`
 
-:   SSH 経由のコマンドのリモート実行。node の attribute "hostname" と "username" を必要とします。
+:   SSH 経由のコマンドのリモート実行。ノードのアトリビュート "hostname" と "username" を必要とします。
 
 File Copier プロバイダ:
 
@@ -283,7 +283,7 @@ File Copier プロバイダ:
 
 `jsch-scp`
 
-:   SCP 経由のリモートへのコマンドのコピー。node の attribute "hostname" と "username" を必要とします。
+:   SCP 経由のリモートへのコマンドのコピー。ノードのアトリビュート "hostname" と "username" を必要とします。
 
 #### SSH プロバイダ
 
@@ -291,8 +291,8 @@ SSH Node Executor と File Copier は Rundeck にデフォルトで付属して�
 
 それらを使うための典型的なノード設定はシンプルです。
 
-* ノードの `hostname` attribute をセットします。デフォルトポート 22 番以外を使っている場合は "hostname:port" というフォーマットも可能です。
-* リモートノードへ接続する際に用いる username をノードの `username` attribute にセットします。
+* ノードの `hostname` アトリビュートをセットします。デフォルトポート 22 番以外を使っている場合は "hostname:port" というフォーマットも可能です。
+* リモートノードへ接続する際に用いる username をノードの `username` アトリビュートにセットします。
 * Rundeck サーバーからノード群に対して公開鍵/秘密鍵認証のセットアップを行います
 
 これでノード上でリモートコマンドを実行したり、スクリプトを実行できるようになります。
@@ -308,7 +308,7 @@ SSH プロバイダは、補助的に Sudo パスワード認証もサポート�
 一般的な SSH 設定の記述に加えて、いくつか SCP 用に追加設定があります。
 In addition to the general SSH configuration mentioned for in this section, some additional configuration can be done for SCP. 
 
-あるリモートノード上であるスクリプトが実行されたとき、まず SCP 経由でスクリプトファイルをコピーし、それから実行します。SSH コネクションプロパティに加えて SCP 用に以下のような node attribute を設定できます。
+あるリモートノード上であるスクリプトが実行されたとき、まず SCP 経由でスクリプトファイルをコピーし、それから実行します。SSH コネクションプロパティに加えて SCP 用に以下のようなノードアトリビュートを設定できます。
 
 *   `file-copy-destination-dir`: 実行前にそのスクリプトファイルをコピーする先となるリモートノード上のディレクトリ。デフォルトの値は Windowns ノードだと `C:/WINDOWS/TEMP` 、それ以外は `/tmp` となります。
 *   `osFamily`: windows ノード用には "windows" と指定します。
@@ -326,7 +326,7 @@ SSH 認証は パスワードまたは公開鍵/秘密鍵認証の 2 つの方�
 
 ある特定のノードに接続した時、正しい認証メカニズムが選ばれるようこのシーケンスが使われます。
 
-1. **ノードレベル**: ノード上の `ssh-authentication` プロパティ。attribute ターゲットノードにだけ適用します。
+1. **ノードレベル**: ノード上の `ssh-authentication` アトリビュートにターゲットノードにだけを適用します。
 2. **プロジェクトレベル**: `project.properties` 内の `project.ssh-authentication` プロパティ。 `project.properties`  デフォルトでプロジェクト配下の全ノードに適用します。
 3. **Rundeck レベル**: `framework.properties` 内の `framework.ssh-authentication` プロパティ。デフォルトで全てのプロジェクトのノードに適用します。
 
@@ -335,7 +335,7 @@ SSH 認証は パスワードまたは公開鍵/秘密鍵認証の 2 つの方�
 ##### SSH username 
 の設定
 
-SSH 経由で接続するための username は、node attribute の `username` から取得します:
+SSH 経由で接続するための username は、ノードアトリビュート `username` から取得します:
 
 *   `username="user1"`
 
@@ -344,7 +344,7 @@ SSH 経由で接続するための username は、node attribute の `username` 
 *   `${job.username}` - Rundeck でジョブを実行している username を使います
 *   `${option.someUsername}` - "someUsername" というジョブオプションの値を使います
 
-もし node attribute `username` がセットされていない場合はプロジェクトまたはフレームワーク設定で使われてる静的な値を使います。あるノードへの接続時の username は下記の順番で値を探しにいきます:
+もしノードアトリビュート `username` がセットされていない場合はプロジェクトまたはフレームワーク設定で使われてる静的な値を使います。あるノードへの接続時の username は下記の順番で値を探しにいきます:
 
 1.  **Node level**: node attribute `username` 。実行時の値やオプションを参照出来る場合は利用します
 2.  **Project level**: プロジェクト内の `project.properties` ファイル内の `project.ssh.user` プロパティ
@@ -369,21 +369,21 @@ SSH 経由で接続するための username は、node attribute の `username` 
 
 パスフレーズを使った秘密鍵認証は以下のように動作します:
 
-*   鍵のパスフレーズを入力させるプロンプトを出すようジョブに Secure Option についての定義がされていなければなりません。
-*   ターゲットノードでは秘密鍵認証を使うよう設定されてなければなりません。
-*   ユーザがジョブを実行するとき、パスフレーズ入力用のプロンプトが表示されます。Secure Option の値はデータベースには保存されず、その実行にだけ利用されます。
+*   鍵のパスフレーズを入力させるプロンプトを出すようジョブにセキュアオプションについての定義がされていなければなりません。
+*   ターゲットノードは秘密鍵認証を使うよう設定されてなければなりません。
+*   ユーザがジョブを実行するとき、パスフレーズ入力用のプロンプトが表示されます。セキュアオプションの値はデータベースには保存されず、その実行にだけ利用されます。
 
 さらに秘密鍵パスフレーズ認証にはいくつかの必要事項と制限があります:
 
 1.  秘密鍵認証にてパスフレーズを要求するノードには予め定義されたジョブを通してのみ実行が可能です。アドホックコマンドでは実行できません。（今のところ）
-2.  そのようなノード上で実行される各ジョブには実行前にパスフレーズを入力してもらうよう Secure Option の定義がされていなければなりません。
-3.  秘密鍵パスフレーズ認証を使う全てのノードでは入力するパスフレーズと定義された Secure Option 定義とがマッチする必要があります。または同じパスフレーズを共有して使う場合は同じ Option 名（またはデフォルトのまま）を使う必要があります。（例えば、同じ秘密鍵を共有して使う場合など）
+2.  そのようなノード上で実行される各ジョブには実行前にパスフレーズを入力してもらうようセキュアオプションの定義がされていなければなりません。
+3.  秘密鍵パスフレーズ認証を使う全てのノードでは入力するパスフレーズと定義されたセキュアオプション定義とがマッチする必要があります。または同じパスフレーズを共有して使う場合は同じ Option 名（またはデフォルトのまま）を使う必要があります。（例えば、同じ秘密鍵を共有して使う場合など）
 
 パスフレーズは GUI ・CUI どちらからも入力できます。CUI または API 経由でジョブを実行したい場合はジョブの引数としてパスフレーズを入力します。
 
 SSH 秘密鍵認証を利用可能にするために、まず `ssh-authentication` の値が [SSH 認証タイプの設定](plugins.html#ssh-認証タイプの設定)にて説明されているとおりに設定されてるか確かめてください。次に、[SSH 秘密鍵の設定](plugins.html#ssh-秘密鍵の設定)にて説明されているとおりに秘密鍵ファイルのパスが設定されているか確かめてください。
 
-今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、node 設定でデフォルト値として使われている `sshKeyPassphrase` を使うのが一番簡単です。
+今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、ノードの設定でデフォルト値として使われている `sshKeyPassphrase` を使うのが一番簡単です。
 
 もしオプション名が `sshKeyPassphrase` で無い場合は、以下の attribute がセットされているか確かめてください:
 
@@ -423,20 +423,18 @@ SSH 秘密鍵認証を利用可能にするために、まず `ssh-authenticatio
 *   ユーザがジョブを実行する際、パスワード入力用にプロンプトを表示します。パスワード用セキュアオプションの値はデータベースには保存されず、その実行のみに使われます。
 
 1.  パスワード認証を行うノードには予め定義されたジョブを通してのみ実行が可能です。アドホックコマンドでは実行できます。（今のところ）
-2.  そのようなノード上で実行される各ジョブには実行前にパスワードを入力してもらうよう Secure Option の定義がされていなければなりません。
-3. All Nodes using password authentication for a Job must have an equivalent Secure Option defined, or may use the same option name (or the default) if they share authentication passwords.
-3.  パスワード認証を使う全てのノードでは入力するパスワードと定義された Secure Option 定義とがマッチする必要があります。または同じパスワードを共有して使う場合は同じ Option 名（またはデフォルトのまま）を使う必要があります。（例えば、同じ秘密鍵を共有して使う場合など）
+2.  そのようなノード上で実行される各ジョブには実行前にパスワードを入力してもらうようセキュアオプションの定義がされていなければなりません。
+3.  パスワード認証を使う全てのノードでは入力するパスワードと定義されたセキュアオプション定義とがマッチする必要があります。または同じパスワードを共有して使う場合は同じ Option 名（またはデフォルトのまま）を使う必要があります。（例えば、同じ秘密鍵を共有して使う場合など）
 
 パスワードは GUI・CUI どちらからも入力できます。CUI または API 経由でジョブを実行したい場合はジョブの引数としてパスワードを入力します。
 
 パスワード認証を利用可能にするために、まず `ssh-authentication` の値を [SSH 認証タイプの設定](plugins.html#ssh-認証タイプの設定)にて説明されているとおりに設定されているか確かめてください。
 
-次にジョブの設定をします。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、node 設定でデフォルト値として使われている
-Next, configure a Job, and include an Option definition where `secureInput` is set to `true`.  The name of this option can be anything you want, but the default value of `sshPassword` assumed by the node configuration is easiest.
+次にジョブの設定をします。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、ノードの設定でデフォルト値として使われている
 
 SSH 秘密鍵認証を利用可能にするために、まず `ssh-authentication` の値が [SSH 認証タイプの設定](plugins.html#ssh-認証タイプの設定)にて説明されているとおりに設定されてるか確かめてください。次に、[SSH 秘密鍵の設定](plugins.html#ssh-秘密鍵の設定)にて説明されているとおりに秘密鍵ファイルのパスが設定されているか確かめてください。
 
-今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、node 設定でデフォルト値として使われている `sshKeyPassphrase` を使うのが一番簡単です。
+今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、ノードの設定でデフォルト値として使われている `sshKeyPassphrase` を使うのが一番簡単です。
 
 もしオプション名が `sshKeyPassword` で無い場合は、以下の attribute が各ノードにセットされているか確かめてください:
 
@@ -481,33 +479,37 @@ SSH パスワード認証に同じように、Sudo パスワード認証にも�
 
 *   ジョブにはユーザにパスワードを入力させるようプロンプトを出すセキュアオプションの定義がされていなければなりません。
 *   ターゲットノードは Sudo 認証を行うよう設定されていなければなりません。
-* When the user executes the Job, they are prompted for the password.  The Secure Option value for the password is not stored in the database, and is used only for that execution.
+*   ユーザがジョブを実行するとき、パスワード入力用のプロンプトが表示されます。セキュアオプションの値はデータベースには保存されず、その実行にだけ利用されます。
 
-Therefore Sudo Password Authentication has several requirements and some limitations:
+さらに Sudo パスワード認証にはいくつかの必要事項と制限があります:
 
-1. Sudo Password authenticated nodes can only be executed on via a defined Job, not via Ad-hoc commands (yet).
-2. Each Job that will execute on Sudo Password Authenticated Nodes must define a Secure Option to prompt the user for the Sudo password before execution.
-3. All Nodes using Sudo password authentication for a Job must have an equivalent Secure Option defined, or may use the same option name (or the default) if they share sudo authentication passwords.
+1.  秘密鍵認証にてパスワードを要求するノードには予め定義されたジョブを通してのみ実行が可能です。アドホックコマンドでは実行できません。（今のところ）
+2.  そのようなノード上で実行される各ジョブには実行前にパスワードを入力してもらうようセキュアオプションの定義がされていなければなりません。
+3.  秘密鍵パスワード認証を使う全てのノードでは入力するパスワードと定義されたセキュアオプション定義とがマッチする必要があります。または同じパスワードを共有して使う場合は同じ Option 名（またはデフォルトのまま）を使う必要があります。（例えば、同じ秘密鍵を共有して使う場合など）
 
-Passwords for the nodes are input either via the GUI or arguments to the job if executed via CLI or API.
+パスワードは GUI ・CUI どちらからも入力できます。CUI または API 経由でジョブを実行したい場合はジョブの引数としてパスワードを入力します。
 
-To enable Sudo Password Authentication, set the `sudo-command-enabled` property/attribute to `true`.
+SSH パスワード認証を利用可能にするために、まず `ssh-authentication` の値が [SSH 認証タイプの設定](plugins.html#ssh-認証タイプの設定)にて説明されているとおりに設定されてるか確かめてください。
 
-You can configure the way the Sudo Password Authentication works by setting these properties at the Node, Project or Rundeck scopes. Simply set the attribute name on a Node, the `project.NAME` in project.properties, or `framework.NAME` in framework.properties:
+今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、ノードの設定でデフォルト値として使われている `sshKeyPassword` を使うのが一番簡単です。
+
+ノードやプロジェクト、Rundeck システム単位にこれらのプロパティの設定を行う事で Sudo パスワード認証が動作するようになります。project.properties の中の `project.NAME` や framework.properties の中の `framework.NAME` というアトリビュート名をノードにセットします。
  
-* `sudo-command-enabled` - set to "true" to enable Sudo Password Authentication.
-* `sudo-command-pattern` - a regular expression to detect when a command execution should expect to require Sudo authentication. Default pattern is `^sudo$`.
-* `sudo-password-option` - an option reference ("option.NAME") to define which secure option value to use as password.  The default is `option.sudoPassword`.
-* `sudo-prompt-pattern` - a regular expression to detect the password prompt for the Sudo authentication. The default pattern is `^\[sudo\] password for .+: .*`
-* `sudo-failure-pattern` - a regular expression to detect the password failure response.  The default pattern is `^.*try again.*`.
-* `sudo-prompt-max-lines` - maximum lines to read when expecting the password prompt. (default: `12`).
-* `sudo-prompt-max-timeout` - maximum milliseconds to wait for input when expecting the password prompt. (default `5000`)
-* `sudo-response-max-lines` - maximum lines to read when looking for failure response. (default: `2`).
+*   `sudo-command-enabled` - "true" をセットし、Sudo パスワード認証を利用可能にします。
+*   `sudo-command-pattern` - Sudo 認証が必要なコマンドを見つけるための正規表現をセットします。デフォルトパターンは `^sudo$` です。
+*   `sudo-password-option` - どのセキュアオプション値（パスワードとして利用される）かを定義するオプションリファレンス ("option.NAME") をセットします
+*   `sudo-prompt-pattern` - Sudo 認証の際のプロンプトを見つけるための正規表現をセットします。デフォルトパターンは `^\[sudo\] password for .+: .*` です。
+*   `sudo-failure-pattern` - 認証失敗時の出力を見つけるための正規表現をセットします。デフォルトパターンは `^.*try again.*` です。
+*   `sudo-prompt-max-lines` - 期待されるパスワードプロンプトは最大何行まで読む込むかをセットします。（デフォルトは `12` です）
+*   `sudo-prompt-max-timeout` - 期待されるパスワードプロンプトが表示されるまで何ミリ秒待つかをセットします。（デフォルト `5000` です）
+*   `sudo-response-max-lines` - 認証失敗時の出力を探す際何行読み込むかをセットします。（デフォルト `2` です）
 * `sudo-response-max-timeout` - maximum milliseconds to wait for response when detecting the failure response. (default `5000`)
-* `sudo-fail-on-prompt-max-lines` - true/false. If true, fail execution if max lines are reached looking for password prompt. (default: `false`)
+*   `sudo-response-max-timeout` - 認証失敗時の出力が表示されるまで何ミリ秒待つかをセットします。（デフォルト `false` です）
 * `sudo-success-on-prompt-threshold` - true/false. If true, succeed (without writing password), if the input max lines are reached without detecting password prompt. (default: `true`).
-* `sudo-fail-on-prompt-timeout` - true/false. If true, fail execution if timeout reached looking for password prompt. (default: `true`)
+*   `sudo-success-on-prompt-threshold` - true/false. true にすると、もしパスワードプロンプトを見つけられずに最大読み込み行数に達した場合に（パスワードを入力せずに）認証成功です。（デフォルトは `true` です）????
+*   `sudo-fail-on-prompt-timeout` - true/false. true にすると、パスワードプロンプトが表示される前にタイムアウトした場合はジョブの実行を失敗とします。（デフォルトは `true` です）
 * `sudo-fail-on-response-timeout` - true/false. If true, fail on timeout looking for failure message. (default: `false`)
+*   `sudo-fail-on-response-timeout` - true/false. true にすると、認証失敗の出力を探し見つからないままタイムアウトした場合ジョブの実行は失敗となります。（デフォルトは `false` です）???
 
 Note: the default values have been set for the unix "sudo" command, but can be overridden if you need to customize the interaction.
 
