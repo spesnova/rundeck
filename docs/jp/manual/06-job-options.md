@@ -1,6 +1,11 @@
-% Job Options
+% ジョブオプション
 % Alex Honor; Greg Schueler
 % November 20, 2010
+
+様々なコマンドやスクリプトをジョブ化できます。
+しかし全てのユースケースに対応するジョブを作ろうとすると、スクリプトの呼び出し方が少し違う程度のジョブを大量に作ることになってしまうでしょう。
+それらの違いとは、往々にして環境やアプリケーションバージョンに関連します。
+そのほかの部分については人が必要な情報を与えてジョブを実行しているにすぎません。
 
 Any command or script can be wrapped as a Job. Creating a Job for
 every use case will proliferate a large number of Jobs differing only
@@ -9,21 +14,36 @@ differences are often environment or application version
 related. Other times only the person running the Job can provide the
 needed information to run the Job correctly. 
 
+スクリプトやコマンドをデータドリブンにしましょう。
+そうすればより一般化でき、他のコンテキストでも再利用できます。
+同じプロセスの変数をメンテナンスするより、ジョブが外部データからのオプションモデルで駆動するようにすることで、よりよい抽象化とカプセル化を期待できます。
+
 Making your scripts and commands data driven, will also make them
 more generic and therefore, reusable in different contexts. Rather than
 maintain variations of the same basic process, letting Jobs be driven
 by a model of options from externally provided data will lead to
 better abstraction and encapsulation of your process.
 
+Rundeck のジョブは、1つ以上の名前付き *オプション* を定義させるために入力プロンプトをユーザへ出すよう設定できます。
+名前付きパラメータと呼ばれる *オプション* モデルは、必須もしくはオプショナルにでき、ジョブが実行されるときにユーザに提示される選択肢の範囲が含まれています。
+
 Rundeck Jobs can be configured to prompt a user for input by defining
 one or more named *options*. An *option* models a named parameter that
 can be required or optional and include a range of choices that will
 be presented to the user when the Job is run.
 
+ユーザは、値をタイピングするか選択肢メニューから選んでジョブへ受け渡します。
+バリデーションパターンは、入力をオプションの要件通りにコンパイルすることを保証します。
+
 Users supply options by typing in a value or selecting from a menu
 of choices. A validation pattern ensures input complies to the
 option requirement. Once chosen, the value chosen for the option is
 accessible to the commands called by the Job.
+
+オプション選択肢は固定か、動的ソースからモデリングされます。
+固定選択肢は、ジョブ定義の中でコンマ区切りでモデリングされます。
+オプション値を動的にしなければならない場合、ジョブがオプションデータを外部ソースから拾うために有効な URL を定義しなけれななりません。
+ジョブが URL から外部ソースにアクセスできるようになると、Rundeck を他のツールと統合して、そのデータをジョブワークフローに組み込むことができるようになります。
 
 Option choices can be modeled as a static set or from a dynamic
 source. Static choices can be modeled as a comma separated list in the
