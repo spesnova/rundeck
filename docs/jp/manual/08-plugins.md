@@ -463,9 +463,9 @@ SSH 秘密鍵認証を利用可能にするために、まず `ssh-authenticatio
         </job>
     </joblist>
 
-##### Sudo パスワード認証の設定
+##### 2 つ目の Sudo パスワード認証の設定
 
-SSH プロバイダは補助的に Sudo パスワード認証のメカニズムをサポートしています。あなたの環境におけるセキュリティ要件で一般的な "rundeck" アカウントではなくそれぞれのユーザアカウントを使って SSH 接続させ、"sudo" レベルのコマンドを実行時にパスワードを要求するような場合に便利です。
+SSH プロバイダは 2 つ目の Sudo パスワード認証を設定できるメカニズムをサポートしています。あなたの環境におけるセキュリティ要件で一般的な "rundeck" アカウントではなくそれぞれのユーザアカウントを使って SSH 接続させ、"sudo" レベルのコマンドを実行時にパスワードを要求するような場合に便利です。
 
 このメカニズムは以下のように動作します:
 
@@ -511,15 +511,15 @@ SSH パスワード認証を利用可能にするために、まず `ssh-authent
 * `sudo-fail-on-response-timeout` - true/false. If true, fail on timeout looking for failure message. (default: `false`)
 *   `sudo-fail-on-response-timeout` - true/false. true にすると、認証失敗の出力を探し見つからないままタイムアウトした場合ジョブの実行は失敗となります。（デフォルトは `false` です）???
 
-Note: the default values have been set for the unix "sudo" command, but can be overridden if you need to customize the interaction.
+ノート: unix で "sudo" が必要なコマンドのデフォルト値は既に設定されていますが、もしインタラクションをカスタマイズする必要がある場合は上書きできます。
 
-Next, configure a Job, and include an Option definition where `secureInput` is set to `true`.  The name of this option can be anything you want, but the default value of `sudoPassword` recognized by the plugin can be used.
+今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、ノードの設定でデフォルト値として使われている `sudoPassword` を使うのが一番簡単です。
 
-If the value is not `sudoPassword`, then make sure to set the following attribute on each Node for password authentication:
+もしオプション名が `sudoPassword` で無い場合は、以下の attribute がセットされているか確かめてください:
 
-* `sudo-password-option` = "`option.NAME`" where NAME is the name of the Job's secure option.
+*   `sudo-password-option` = "`option.NAME`" : `NAME` 部分にジョブのセキュアオプションの名前が入ります。
 
-An example Node and Job option configuration are below:
+ノードとジョブオプションの設定の例です:
 
     <node name="egon" description="egon" osFamily="unix"
         username="rundeck"
@@ -527,7 +527,7 @@ An example Node and Job option configuration are below:
         sudo-command-enabled="true"
         sudo-password-option="option.sudoPassword2" />
 
-Job:
+ジョブ:
 
     <joblist>
         <job>
@@ -547,44 +547,28 @@ Job:
         </job>
     </joblist>
 
-##### Configuring Multiple Sudo Password Authentication
+##### Sudo パスワード認証を複数設定する
 
-You can enable a further level of sudo password support for a node.  If you have
-the requirement of executing a chain of "sudo" commands, such as "sudo -u user1
-sudo -u user2 command", and need to enable password input for both levels of
-sudo.  This is possible by configuring a secondary set of properties for your
-node/project/framework.
+ノードに対してさらに高度な sudo パスワード認証設定ができます。例えば "sudo -u user1 sudo -u user2 command" といったような "sudo" コマンドを連鎖的に実行する必要性があり、両方の "sudo" に対してパスワードを入力する必要性がある場合です。あなたの node/project/framework に合わせた 2 つ目のプロパティセットを設定できます。
 
-The configuration properties are the same as those for the first-level of sudo
-password authentication described in [Configuring Secondary Sudo Password
-Authentication](#configuring-secondary-sudo-password-authentication), but with a
-prefix of "sudo2-" instead of "sudo-", such as:
+プロパティの設定方法は、1 つ目の sudo パスワード認証と同じです。 [2 つ目 sudo パスワード認証の設定](#configuring-secondary-sudo-password-authentication)にて説明されています。しかし以下のように、"sudo-" の代わりに "sudo2-" というプリフィックスを使います:
 
     sudo2-command-enabled="true"
     sudo2-command-pattern="^sudo .+? sudo .*$"
 
-This would turn on a mechanism to expect and respond to another sudo password
-prompt when the command matches the given pattern.
+こうすることにより実行しようとしているコマンドが設定されたパターンにマッチするときは 2 つ目の sudo パスワードプロンプトを表示するよう仕向けます。
 
-If a value for "sudo2-password-option" is not set, then a default value of
-`option.sudo2Password` will be used.
+"sudo2-password-option" の値が設定されていないときは、デフォルトの値 `option.sudo2Password` が利用されます。
 
-**A note about the "sudo2-command-pattern":**
+**"sudo2-command-pattern" について一つ注意点があります:**
 
-The sudo authentication mechanism uses two regular expressions to test whether it should be 
-invoked.
+sudo 認証メカニズムはどちらの設定が呼ばれたのかを確認するために 2 つの正規表現を使います。
 
-For the first sudo authentication, the "sudo-command-pattern" value is matched against
-the **first component of the command being executed**. The default value for this pattern is `^sudo$`.
-So a command like "sudo -u user1 some command" will match correctly.  You can modify the 
-regular expression (e.g. to support "su"), but it will always only match against the first 
-part of the command.
+1 つ目の sudo 認証かを判別するために、**実行されているコマンドの最初の部分**と "sudo-command-pattern" の値とマッチングします。このパターンのデフォルト値は `^sudo$` です。
 
-If "sudo2-command-enabled" is "true", then the "sudo2-command-pattern" is also checked 
-and if it matches then another sudo authentication is enabled.
-However this regular expression is tested against the **entire command string**
-to make it possible to determine whether it should be enabled. The default value is 
-`^sudo .+? sudo .*$`. If necessary you should customize the value.
+そのため "sudo -u user1 some command" のようなコマンドは正しくマッチします。（例えば、"su" をサポートするよう）正規表現を編集できます。しかしマッチング対象とされるのは常にコマンドの最初の部分であることに注意してください。
+
+"sudo2-command-enabled" が "true" に設定されているとき "sudo2-command-pattern" の値もマッチングします。正しくマッチした場合はもう 1 つの sudo 認証が利用されます。しかし、どちらの sudo 認証を使うべきか決められるよう、**コマンド文字列全体** を正規表現とのマッチング対象とします。デフォルトの正規表現は `^sudo .+? sudo .*$` です。必要に応じて正規表現はカスタマイズできます。
 
 ### Resource Model Sources
 
