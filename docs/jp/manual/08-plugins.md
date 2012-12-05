@@ -570,46 +570,45 @@ sudo 認証メカニズムはどちらの設定が呼ばれたのかを確認す
 
 "sudo2-command-enabled" が "true" に設定されているとき "sudo2-command-pattern" の値もマッチングします。正しくマッチした場合はもう 1 つの sudo 認証が利用されます。しかし、どちらの sudo 認証を使うべきか決められるよう、**コマンド文字列全体** を正規表現とのマッチング対象とします。デフォルトの正規表現は `^sudo .+? sudo .*$` です。必要に応じて正規表現はカスタマイズできます。
 
-### Resource Model Sources
+### リソースモデルソース
 
-Rundeck includes these built-in providers in the core installation:
+Rundeck は以下に示すビルトインプロバイダをコアに持っています:
 
 `file`
 
-:    Uses a file on the file system, in any of the supported Resources formats.
+:    サポートされているリソースフォーマットのファイルを使うプロバイダ。
 
 `url`
 
-:    GETs a URL, and expects one of the supported Resources formats.
+:    サポートされているリソースフォーマットのリソースを URL から GET して取得するプロバイダ。
 
 `directory`
 
-:    looks at all files in a directory for suppored file extensions, and internally uses the `file` provider for
-     each file that matches.
+:    あるディレクトリ内のサポートされているファイルを全て読み込むプロバイダ。ファイルプロバイダのエクステンションであり、内部では `file` プロバイダを使っています。
 
 `script`
 
-:    Executes a script and parses the output as one of the supported formats
+:    あるスクリプトによりパースされた出力をサポートされているフォーマットとして使うプロバイダ。
 
-To configure these providers, refer to [Resource Model Source configuration](plugins.html#resource-model-source-configuration) and use the following configuration properties.
+これらのプロバイダの設定を行うには, [リソースモデルソースの設定](plugins.html#リソースモデルの設定)を参照してください。そして以下の項目で出てくるプロパティを使ってください。
 
-#### File Resource Model Source Configuration
+#### ファイルリソースモデルソースの設定
 
-The `file` Resource Model Source provider reads a file in one of the supported
-[Resource Model Document Formats](rundeck-basics.html#resource-model-document-formats).
+`file` リソースモデルソースプロバイダはサポートされている[リソースモデルドキュメントフォーマット](rundeck-basics.html#resource-model-document-formats)のファイルを読み込みます。
 
-Name                          Value                           Notes
+名前                          値                              説明 
 -----                         ------                          ------
-`file`                        file path                       Path to a file on disk.
-`format`                      format name                     Can be used to declare the format explicitly. Otherwise the format is determined from the `file`'s extension.
-`requireFileExists`           true/false                      If true and the file is missing, causes a failure to load the nodes. (Default: false)
-`includeServerNode`           true/false                      If true, include the Project's server node automatically. (Default: false)
+`file`                        ファイルパス                    ディスク上のファイルパス
+`format`                      フォーマット名                  明示的にフォーマットを宣言することができます。利用できるフォーマットは `file` エクステンションのものに限ります。
+`requireFileExists`           true/false                      値が true かつファイルが存在しないとき、ノードの読み込みは失敗となります。（デフォルト: false ）
+`includeServerNode`           true/false                      値が true ならば Rundeck サーバーのノードを自動的に含めます（デフォルト: false ）
 `generateFileAutomatically`   true/false                      If true, create the file automatically if it is missing. (Default: false)
 ----------------------------
 
-Table: Configuration properties for `file` Resource Model Source provider
+Table: `file` リソースモデルソースプロバイダのプロパティの設定
 
-The value of `format` must be one of the supported [Resource Model Document Formats](rundeck-basics.html#resource-model-document-formats). The built-in formats are: `resourcexml` or `resourceyaml`, but any format provided by a [Resource Format Plugin](plugins.html#resource-format-plugins) can be specified as well.
+`format` の値は[リソースモデルドキュメントフォーマット](rundeck-basics.html#リソースモデルドキュメントフォーマット)にてサポートされているものでなければなりません。ビルトインフォーマットは `resourcexml` または `resourceyaml` の 2 つです。
+The built-in formats are: `resourcexml` or `resourceyaml`, but any format provided by a [Resource Format Plugin](plugins.html#resource-format-plugins) can be specified as well.
 
 *Example:*
 
