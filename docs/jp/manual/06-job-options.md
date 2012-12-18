@@ -24,7 +24,7 @@ maintain variations of the same basic process, letting Jobs be driven
 by a model of options from externally provided data will lead to
 better abstraction and encapsulation of your process.
 
-Rundeck のジョブは、1つ以上の名前付き *オプション* を定義させるために入力プロンプトをユーザへ出すよう設定できます。
+Rundeck のジョブは、1 つ以上の名前付き *オプション* を定義させるために入力プロンプトをユーザへ出すよう設定できます。
 名前付きパラメータと呼ばれる *オプション* モデルは、必須もしくはオプショナルにでき、ジョブが実行されるときにユーザに提示される選択肢の範囲が含まれています。
 
 Rundeck Jobs can be configured to prompt a user for input by defining
@@ -32,7 +32,7 @@ one or more named *options*. An *option* models a named parameter that
 can be required or optional and include a range of choices that will
 be presented to the user when the Job is run.
 
-ユーザは、値をタイピングするか選択肢メニューから選んでジョブへ受け渡します。
+ユーザは、値を入力するか選択肢メニューから選んでジョブへ受け渡します。
 バリデーションパターンは、入力をオプションの要件通りにコンパイルすることを保証します。
 
 Users supply options by typing in a value or selecting from a menu
@@ -67,7 +67,7 @@ Execution Options..." where input and menu choices must be configured.
 Command line users executing Jobs via the `run` shell
 tool also will specify options as an argument string.
 
-オプションをどうやってジョブへのユーザインタフェースの一部とするか考えることに時間を費やす価値があります。
+オプションをどのようにジョブへのユーザインタフェースの一部とするか考えることに時間をかける価値があります。
 そうすることで、手続きの汎用化を次のレベルへとすすめる、いくつかのアイデアを得られます。
 
 It is worth spending a moment to consider how options become
@@ -76,7 +76,7 @@ level of procedure formalization.
 
 * ネーミングと説明に関する規約: ユーザがオプション名を呼んだだけで役割をイメージでき、説明を読めばその目的を判断できること
 * 必須オプション: ユーザが入力しないと失敗するものについては必須オプションとすること
-* 入力値の制約とバリデーション: オプションの値を絞り込む必要がある場合、その制御のためにセーフガードを作れることを考慮しましょう
+* 入力値の制約とバリデーション: オプションの値を絞り込む必要がある場合、その制御のためにセーフガードを作れることを頭に入れておきましょう
 
 * Naming and description convention: Visualize how the user will read
   the option name and judge its purpose from the description you supply.
@@ -125,7 +125,7 @@ Secure オプションは複数の値を選択する入力はサポートしま�
 
 Secure Options do not support Multi-valued input. 
 
-また、Node Executors への入力にもつかえません。
+また、Node Executors への入力にも使えません。
 そのような用途には Secure Remote AUthentication オプションを利用して下さい。
 
 Secure Options cannot be used as authentication input to Node Executors, you must use a Secure Remote Authentication option described below.
@@ -235,7 +235,7 @@ Note: If you define arguments in the wrong manner, then the Secure and Secure Re
 
 ## オプションエディタ
 
-オプションは保存されたジョブに作成できます。ジョブ編集ページには存在するオプションのサマリを表示するエリアがあり、新規に追加するか、既存の者を編集するためのリンクがあります。
+オプションは保存されたジョブに作成できます。ジョブ編集ページには存在するオプションのサマリを表示するエリアがあり、新規に追加するか、既存の物を編集するためのリンクがあります。
 
 Options can be created for any stored Job. The Job edit page contains
 an area displaying a summary to existing options and a link to add new
@@ -256,7 +256,7 @@ Clicking the  "edit" link opens the options editor.
 
 オプションエディタはそれぞれのオプションについて、拡大されたサマリを表示します。
 それぞれのオプションは利用法のサマリ、説明、値リスト、制約と共にリストアップされます。
-"Add an option" リンクをおすと、新しいパラメータを定義するためのフォームがオープンします。
+"Add an option" リンクを押すと、新しいパラメータを定義するためのフォームがオープンします。
 "Close" リンクを押すとエディタはたたまれてサマリビューに戻ります。
 
 The options editor displays an expanded summary for each defined
@@ -293,7 +293,7 @@ existing ones can be changed by pressing their "edit" link.
 
 ![Option edit form](../figures/fig0502.png)
 
-オプション定義フォームはいくつかのエリアにわけられています:
+オプション定義フォームはいくつかのエリアに分けられています:
 
 The option definition form is organized into several areas:
 
@@ -340,7 +340,7 @@ Restrictions
 
 Requirement
 
-:    そのオプションが与えられている場合のみ実行を許可することを示します。"No" を選択すると、そのオプションは必須となりません。"Yes" をえらぶと要求されます。
+:    そのオプションが与えられている場合のみ実行を許可することを示します。"No" を選択すると、そのオプションは必須となりません。"Yes" を選ぶと要求されます。
 :    Indicates if the Job can only run if a choice is provided for
      that Option. Choosing "No" states the option is not required
      Choose "Yes" to state the option is required.
@@ -415,7 +415,7 @@ The "hello" Job option signature would be: `-message <>`.
 
 ![Option usage](../figures/fig0504.png)
 
-引数は ${option.message} として定義されてスクリプトに渡ります。
+引数は `${option.message}` として定義されてスクリプトに渡ります。
 
 The arguments passed to the script are defined as `${option.message}`.
 
@@ -575,8 +575,8 @@ Option model providers are configured on a per-Option basis (where a Job may hav
 
 ### 設定 ###
 
-それぞれのジョブオプションのエントリは可能な値をリモート URL からとるよう設定することができます。
-もしジョブを [job.xml ファイルフォーマット](../manpages/man5/job-v20.html#option)で編集する場合、シンプルに valuesUrl 属性を <option> に加えて下さい。
+それぞれのジョブオプションのエントリは可能な値をリモート URL から取得するよう設定することができます。
+もしジョブを [job.xml ファイルフォーマット](../manpages/man5/job-v20.html#option)で編集する場合、シンプルに `valuesUrl` 属性を `<option>` に加えて下さい。
 もし Rundec web GUI から編集する場合、URL をオプションの Remote URL フィールドに入れて下さい。
 
 Each Option entry for a Job can be configured to get the set of possible values from a remote URL.  If you are authoring the Jobs via [job.xml file format](../manpages/man5/job-v20.html#option), simply add a `valuesUrl` attribute for the `<option>`.  If you are modifying the Job in the Rundeck web GUI, you can entry a URL in the "Remote URL" field for the Option.
@@ -585,7 +585,7 @@ Each Option entry for a Job can be configured to get the set of possible values 
 
     <option valuesUrl="http://site.example.com/values.json" ...
 
-*注*：File URL スキーマも利用可能です (例 file:/path/to/job/options/optA.json).
+*注*：File URL スキーマも利用可能です (例 `file:/path/to/job/options/optA.json`).
 
 *Note*: File URL scheme is also acceptable (e.g, `file:/path/to/job/options/optA.json`).
 
@@ -598,7 +598,7 @@ The value data must be returned in JSON data format described below.
 戻すデータについては3つのスタイルがサポートされています。
 シンプルリスト、シンプルオブジェクト、そして name/value リストです。
 シンプルリストでは、ジョブ実行時にリスト値がポップアップリストで表示されます。
-シンプルオブジェクトか name/value ペアが返されると、name がリストに表示され、value が実際の入力値として利用されます。
+シンプルオブジェクトか name/value ペアが返されると、`name` がリストに表示され、`value` が実際の入力値として利用されます。
 
 Three styles of return data are supported: simple list, simple object, and a name/value list. For a simple list, the list values will be displayed in a pop-up list when running the Job.  If a simple object or name/value pairs are returned, then the `name` will be displayed in the list, but the `value` will be used as the input.
 
@@ -695,7 +695,7 @@ options.  This allows Option model providers to indicate that some or all of the
 dependent option values are necessary for the current option before showing the
 input for the option.
 
-1つ以上のオプションが依存関係を持つ時は、ある変更によって、他のオプション値がリモート URL からリロードされる可能性があります。
+1 つ以上のオプションが依存関係を持つ時は、ある変更によって、他のオプション値がリモート URL からリロードされる可能性があります。
 
 It is possible to have dependencies on more than one option, and any change to
 one of the dependencies will cause the option values to be reloaded from the
@@ -761,7 +761,7 @@ Properties available for Option context:
 To include [Cascading remote option](#cascading-remote-options) values information in the URL, specify a variable of the
 form ${option._name_.value}:
 
-* `option.[name].value`: 選択された値を他のオプション名で置き換える。もしオプションがセットされていなければ空文字列（""）で置き換えられる。
+* `option.[name].value`: 選択された値を他のオプション名で置き換える。もしオプションがセットされていなければ空文字列（""）で置き換える。
 
 * `option.[name].value`: substitutes the selected value of another option by name. If the option is not set, then a blank string ("") will be substituted.
 
@@ -805,7 +805,7 @@ In this case, the option will be allowed to use a textfield to set the value.
 
 ### 実装例 ###
 
-2セクションに渡って、オプションモデルプロパイダとして振る舞うシンプルな CGI スクリプトを用いた例を説明します。
+2 セクションに渡って、オプションモデルプロパイダとして振る舞うシンプルな CGI スクリプトを用いた例を説明します。
 
 The following two sections describe examples using simple CGI scripts
 that act as option model providers.
@@ -833,7 +833,7 @@ automated build.
 
 [JSON] ドキュメントを生成して Hudson に情報を要求するシンプルな CGI スクリプトがあります。
 クエリパラメータに Hudson サーバ、Hudson ジョブ、成果物のパスを利用できます。
-ジョブライターは、成果物リストをオプションモデルとしてうけとり、結果をジョブユーザにメニューとみせるためにパラメータ化された CGI スクリプトへの URL を指定できます。
+ジョブライターは、成果物リストをオプションモデルとして受け取り、結果をジョブユーザにメニューとみせるためにパラメータ化された CGI スクリプトへの URL を指定できます。
 
 A simple CGI script that requests the information from Hudson and then
 generates a [JSON] document is sufficient to accomplish this. The CGI
