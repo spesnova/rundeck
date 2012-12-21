@@ -107,7 +107,7 @@ in lieu of ID.)
 ## ジョブリストとフィルタリング
 
 ジョブ操作は全て Rundeck の "Jobs" ページから開始します。
-ログインしたら、ナビゲーションバーのトップにある "Jobs" ボタンをおせば、あなたの権限で見れるジョブの一覧が表示されます。
+ログインしたら、ナビゲーションバーのトップにある "Jobs" ボタンをおせば、あなたの権限で見られるジョブの一覧が表示されます。
 
 All Job activity begins on the main "Jobs" page inside Rundeck. After
 logging in, press the "Jobs" button in the top navigation bar and any
@@ -128,8 +128,8 @@ Once you have navigated to a Job, you will see its name, possibly its
 description and a summary total of how many times it has been executed.
 
 ジョブ名をクリックすると、ウィンドウが開かれて、より詳細な情報が表示されます。
-あなたが操作可能なアイコンがならんだバーも表示されるでしょう。
-他に、実行時に走るコマンドやフィルター定義、ディスパッチオプションもあるはずです。
+あなたが操作可能なアイコンが並んだバーも表示されるでしょう。
+他に、実行時に走るコマンドやフィルタ定義、ディスパッチオプションもあるはずです。
 
 Clicking on the job name will will expand the window to show the Job
 detail. You will see a button bar containing icons representing the
@@ -274,9 +274,9 @@ open where you can choose execution options.
 Jobs can be defined to prompt the user for options. This page contains
 a form presenting any of these Job options.
 
-いくつかのオプションはデフォルト値をもち、他はあなたに選択させるでしょう。
-また、いくつかのオプションはオプショナルになり他は必須になります。
-最終的に、受け入れ可能な値を管理するパターンになるでしょう。
+いくつかのオプションはデフォルト値をもち、その他については選択肢が表示されます。
+また、いくつかのオプションの入力は任意であり、他は必須になります。
+最終的に、受け入れ可能な値を管理し、その中から選択させるパターンになるでしょう。
 
 Some options will have default values while others may present you
 with a menu of choices. Some options are optional while others are
@@ -295,7 +295,7 @@ When you are ready, press "Run Job Now". The job will enter
 the execution queue and you can track its execution in the 
 [Now running](rundeck-basics.html#now-running) section.
 
-### 実行ジョブのフォロー
+### 実行中ジョブのフォロー
 
 ジョブ実行を開始したら実行詳細ページでアウトプットをフォローできます。
 
@@ -314,12 +314,12 @@ browser will already have been directed to the Execution Follow page.
  
 ## ジョブの作成
 
-Rundeck では2種類のジョブをつくることができます。
+Rundeck では 2 種類のジョブをつくることができます。
 
 Rundeck allows you to define two kinds of Jobs.
 
  - Temporary : *Temporary ジョブ* は実行コマンドセットとノードフィルタ設定を定義します。
- - Saved: *Saved ジョブ* は実行コマンドセットとディスパッチオプションを定義しますが、名前を与えることができ、グループに格納できます。さらに、Saved ジョブは実行スケジュールを持つことが出来ます。
+ - Saved: *Saved ジョブ* は実行コマンドセットとディスパッチオプションを定義しますが、名前をつけることができ、ジョブグループに格納できます。さらに、Saved ジョブは実行スケジュールを持つことが出来ます。
 
 
 * Temporary: A *temporary Job* defines a set of commands to execute and
@@ -334,10 +334,10 @@ From the Jobs, page press the "New Job" button to begin creating a Job.
 
 ![New Job button](../figures/fig0301.png)
 
-### テンポラリジョブ
+### Temporary ジョブ
 
-テンポラリジョブはアドホックコマンドに少しだけ似ています。
-違うのは、コマンドの実行方法について、より多くのコントロールがきくということと、Rundeck の Web アプリでよりよいトラッキングができるという点です。
+Temporary ジョブはアドホックコマンドに少しだけ似ています。
+違うのは、コマンドの実行方法について、より多くのコントロールが効くということと、Rundeck の Web アプリでよりよいトラッキングができるという点です。
 
 
 A temporary job is a bit like an ad-hoc command except you get more
@@ -345,13 +345,13 @@ control over how the commands will execute plus the execution can be
 better tracked within the Rundeck webapp.
 
 
-テンポラリジョブをつくるためには、まず Rundeck の画面にログインして "Jobs" タブをおしてください。
+Temporary ジョブをつくるためには、まず Rundeck の画面にログインして "Jobs" タブを押してください。
 
 To create a temporary job, begin by logging in to the Rundeck
 graphical console, and press the "Jobs" tab.
 
 1. 右のほうにある "New Job" ボタンをおして "Create New Job" フォームを表示させて下さい。
-1. ジョブは1つ以上のワークフローステップで定義されます。ワークフローエリアで "Add a step" リンクをクリックして下さい。
+1. ジョブは 1 つ以上のワークフローステップで定義されます。ワークフローエリアで "Add a step" リンクをクリックして下さい。
 1. ワークフローステップには数種類のタイプがあります。"Script" ワークフローステップタイプを選択して下さい。
 1. "Script" タイプは任意のスクリプトを対象のホストで実行できるタイプです。
 ディスパッチを使う前には "info" シェルスクリプトが実行されています。
@@ -369,9 +369,9 @@ dispatch.
 
 ![Temporary job form](../figures/fig0302.png)
 
-### 永続ジョブ
+### Saved ジョブ
 
-アドホックコマンドや テンポラリジョブの実行は管理者の日常業務の一部です。
+アドホックコマンドや Temporary ジョブの実行は管理者の日常業務の一部です。
 時にはアドホックコマンドがルーチンワーク化し、再利用可能にすることで価値が出るようになるでしょう。
 そのようなジョブはチームメンバから引き渡されたり、他のジョブから派生してくるかもしれません。
 Rundeck はジョブを宣言して保存するために、グラフィカルもしくは XML ファイルで定義するインタフェースを提供します。
@@ -384,9 +384,9 @@ Jobs. Rundeck provides an interface to declare and save jobs, both
 graphically or declared with an XML file.
 
 
-### シンブルな永続ジョブ
+### シンブルな Saved ジョブ
 
-永続ジョブの例として、内部でスクリプトを呼び出すジョブをつくってみます。
+Saved ジョブの例として、内部でスクリプトを呼び出すジョブをつくってみます。
 
 For the first saved Job example, create a Job that calls the info script.
 
@@ -547,7 +547,7 @@ after the user enters the option values.
 
 ## スケジュール付きジョブ
 
-永続ジョブは周期的な基準にそって実行されるよう設定できます。
+Saved ジョブは周期的な基準にそって実行されるよう設定できます。
 そのようなスケジュールされたジョブをつくりたいのなら、"Schedule to run repeatedly?" の下を Yes にしてください。
 Saved jobs can be configured to run on a periodic basis. 
 If you want to create a Scheduled Job, select Yes under "Schedule to
@@ -1003,7 +1003,7 @@ definitions in the XML file, they will show up on the page.
 ## まとめ
 
 この章を読んだあとは、あなたはジョブの概要について理解して、検索したり実行できるようになっていなければなりません。
-また、テンポラリジョブや saved jobs の作成方法、その履歴検索についても理解していなければなりません。
+また、Temporary ジョブや saved jobs の作成方法、その履歴検索についても理解していなければなりません。
 最終的に、XML 形式でのジョブ定義のエクスポート・インポートについて理解しておくべきです。
 
 After reading this chapter, you should be familiar with Rundeck Jobs
