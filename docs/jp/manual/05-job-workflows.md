@@ -1,64 +1,47 @@
-% Job Workflows
+% ジョブのワークフロー
 % Alex Honor; Greg Schueler
 % November 20, 2010
 
-The Job's most basic feature is its ability to execute one or more
-commands across a set of nodes. This sequence of commands is called a
-_workflow_, and each step in the workflow is defined as an invocation
-to a command. 
+ジョブの最も基本的な特徴は、1 つまたは複数のコマンドをあるノードセットに対してまとめて実行できることにあります。コマンドシーケンス（連続したコマンド）は_ワークフロー_と呼ばれ、ワークフローの各ステップには、コマンド呼び出しが定義されています。
 
-The steps of the Job workflow are displayed when viewing a Job's
-detail from a Job listing or within the Job editor form.
+ジョブワークフローの各ステップは、ジョブの一覧画面またはジョブの編集フォームにてジョブの詳細として表示されます。
 
-## Workflow definition
+## ワークフローの定義
 
-Workflows can be defined within the Rundeck graphical console or as an
-XML or YAML document that is loaded to the server.
+ワークフローはグラフィカルコンソールから、または XML or YAML ドキュメントをサーバーに読み込ませることで定義できます。
 
-The graphical console provides an authoring environment where steps
-can be added, edited, removed or reordered.
+グラフィカルコンソールではステップの追加・編集・削除・順序の入れ替えが出来るようになっています。
 
-Users preferring to define Jobs in a text format should refer to the two format definitions:
+テキスト形式でジョブを定義することを好むユーザは、2 つの定義方法を参照するといいでしょう：
 
-* XML:  [job-v20(5)](../manpages/man5/job-v20.html)
-* YAML: [job-yaml-v12(5)](../manpages/man5/job-yaml-v12.html)
+*   XML:  [job-v20(5)](../manpages/man5/job-v20.html)
+*   YAML: [job-yaml-v12(5)](../manpages/man5/job-yaml-v12.html)
 
-It is also possible to author Jobs inside the graphical console
-and then export the definition as a file using the
-`rd-jobs` shell tool ([rd-jobs(1)](../manpages/man1/rd-jobs.html)).
+グラフィカルコンソールの中でジョブを定義しておいて、そこから [rd-jobs(1)](../manpages/man1/rd-jobs.html) Shell ツールが利用する定義ファイルをエクスポートすることも可能です。
 
-See [Exporting Job definitions][1] and [Importing Job definitions][2].
+[ジョブ定義ファイルのエクスポート](#ジョブ定義ファイルのエクスポート)および、[ジョブ定義ファイルのインポート](#ジョブ定義ファイルのインポート)を参照してください。
 
-[1]: #exporting-job-definitions
-[2]: #importing-job-definitions
+## ワークフローコントロールの設定
 
-## Workflow control settings
-
-Workflow execution is controlled by two important settings: *Keepgoing*
-and *Strategy*.
+ワークフローの実行は、*Keepgoing*（続行）と *Strategy*（計画）という 2 種類の重要な設定によってコントロールされています。
 
 ![Workflow controls](../figures/fig0401.png)
 
-*Keepgoing*: This manages what to do if a step incurs and error:
+*Keepgoing*：これはあるステップにてエラーが起きた際どうするかをコントロールします：
 
-*   No: Fail immediately (default)
-*   Yes: Continue to next step
+*   No： 直ちに失敗とします。（デフォルト）
+*   Yes：次のステップに進みます。
 
-The default is to fail immediately but depending on the procedure at
-hand you can choose to have the execution continue.
+デフォルトでは直ちに失敗となりますが、場合によっては実行を続けるよう設定することもできます。
 
-*Strategy*: Controls the order of execution of steps and command
-dispatch to nodes: *Node-oriented* and *Step-oriented*.
+*Strategy*： 実行順序のオーダーとノードへのコマンドディスパッチをコントロールします:
 
-*   *Node-oriented*: Executes the full workflow on each node before the
-    next node. (default)
-*   *Step-oriented*: Executes each step on all nodes before the next
-     node.
+*   *Node-oriented*： 次のノードに進む前にすべてのワークフローを実行します（デフォルト）
+*   *Step-oriented*： 次のノードの前にすべてのノード上の各ステップを実行します。
 
-The following illustrations contrast the strategies showing how three
-steps proceed across two nodes.
+以下のイラストでは、2 つのノードに対して 3 つのステップがどのように進められるかを対比させています。
 
-Node-oriented flow illustrated:
+Node-oriented フローはこうなります：
 
 ~~~~~~~~~~~~~~~~~~~~~
 1.   NodeA    step#1
@@ -69,208 +52,169 @@ Node-oriented flow illustrated:
 6.     "      step#3
 ~~~~~~~~~~~~~~~~~~~~~
 
-Step-oriented flow illustrated:
+Step-oriented フローはこうなります：
 
 ~~~~~~~~~~~~~~~~~~~~~
 1.   NodeA    step#1
 2.   NodeB      "
 3.   NodeA    step#2
 4.   NodeB      "
-5.   NodeA    step#1
+5.   NodeA    step#2
 6.   NodeB      "
 ~~~~~~~~~~~~~~~~~~~~~
 
-The process you are automating will determine which strategy is
-correct, though the node-oriented flow is more commonplace.
+Node-oriented フローが一般的であることも踏まえて、あなたが自動化しているプロセスでどちらのフローを使うのが適切か決めることになります。
 
-## Workflow steps
+## ワークフローの各ステップ
 
-The following sections describe how to construct a workflow as a set
-of steps that call commands of different types.
+以下の章では、様々な種類のコマンドを呼び出す各ステップを 1 つのセットとして、どのようにワークフローを作るか説明します。
 
-When creating a new Job definition, the Workflow form will be set with
-defaults and have no workflow steps defined. The workflow editor will
-have a form open asking to enter a shell command as the first step. 
+新しいジョブ定義を作る際、ワークフローのフォームはデフォルトの状態であり、ワークフローステップの定義はされていません。ワークフローのエディターで最初のステップの定義としてフォームにシェルコマンドを入力するようになっています。
 
 ![Add a step](../figures/fig0402.png)
 
-To add new steps simply press the "Add a step" link inside the workflow
-editor form. This will prompt you with a dialog asking which kind of
-workflow step you would like to add. Each kind of step has its own
-form. When you are done filling out the form, press "Save" to add it
-to the sequence. Pressing "Cancel" will close the form and leave the
-sequence unchanged.
+新しいステップを追加するには、ワークフローのエディターフォームの中の "Add a step" リンクを押すだけです。これで、どのような種類のワークフローステップを追加したいか選択するようダイアログが出ます。フォームの中を埋めたら、"Save" を押してシーケンスの中に保存します。"Cancel" を押すとフォームが閉じられ、シーケンスの変更は保存されません。
 
 ![Workflow step types](../figures/fig0403.png)
 
-New steps are always added to the end of the sequence. See
-[Reordering steps](job-workflows.html#reordering-steps) for directions on modifying the
-step order.
+新しいステップは、常にシーケンスの最後に加えられます。ステップの順番を管理するには[ステップの順序を変更する](job-workflows.html#ステップの順序を変更する)を見てください。
 
-The next several sections describe the specification of each kind of
-command step.
+この先のいくつかの章ではコマンドステップの各種類の詳細について説明します。
 
-### Command step
+### コマンドステップ
 
-Use the command step to call system commands. This is the default type
-of workflow step when creating a Job. Enter any command string you
-would type at the terminal on the remote hosts.
+システムコマンドを呼び出すには、コマンドステップを使ってください。これはジョブを作る際のデフォルトのワークフロータイプです。リモートホストで実行したいコマンドを入力してください。
 
 ![Command step type](../figures/fig0404.png)
 
-This is similar to calling the command with <code>dispatch</code>:
+これは <code>dispatch</code> を使ってコマンドを呼びだすことに似ています：
 
     dispatch [filter-options] -- command
 
-### Script step
+### スクリプトステップ
 
-Execute the supplied shell script content. Optionally, can pass an
-argument to the script specified in the lower text field.
+入力されたシェルスクリプトを実行します。テキストフィールドからスクリプトに引数を渡すこともできます。
 
 ![Script step type](../figures/fig0405.png)
 
-This is similar to calling the command with <code>dispatch</code>:
+これは <code>dispatch</code> を用いてコマンドを呼びだすことに似ています：
 
     dispatch [filter-options] --stdin -- args <<EOF 
     script content here 
     EOF
 
-### Script file step
+### スクリプトファイルステップ
 
-Executes the script file local to the sever to the filtered Node
-set. Arguments can be passed to the script by specifying them in the
-lower text field.
+フィルタリングされたノードセットに対してのみローカルスクリプトを実行します。テキストフィールドにスクリプトへの引数を指定できます。
 
 ![Script file step type](../figures/fig0406.png)
 
-
-This is similar to calling the script file with <code>dispatch</code>:
+これは <code>dispatch</code> を使ってスクリプトファイルを呼びだすことに似ています：
 
     dispatch [filter-options] -s scriptfile -- args
 
-### Script URL step
+### スクリプト URL ステップ
 
-Downloads a script from a URL, and executes it to the filtered Node
-set. Arguments can be passed to the script by specifying them in the
-lower text field.
+URL からスクリプトをダウンロードし、フィルタリングされたノードセットに対してそれを実行します。テキストフィールドにスクリプトへの引数を指定できます。
 
 ![Script URL step type](../figures/fig0406.png)
 
-
-This is similar to calling the script URL with <code>dispatch</code>:
+これは <code>dispatch</code> を使ってスクリプト URL を呼びだすことに似ています：
 
     dispatch [filter-options] -u URL -- args
 
-The URL can contain [Context Variables](#context-variables) that will be expanded at runtime.
+URL には実行時に展開される[コンテキスト変数](#コンテキスト変数)を入れることができます。
 
-### Job reference step
+### ジョブリファレンスステップ
 
-To call another saved Job, create a Job Reference step. Enter the name
-of the Job and its group. 
+もう一つ保存されたジョブを呼ぶには、Job reference step（ジョブリファレンスステップ）を作成してください。ジョブの名前とそのジョブグループを入力します。
 
 ![Job step type](../figures/fig0407.png)
 
-The Job Reference form provides a Job browser to make it easier to
-select from the existing set of saved Jobs. 
-Click the "Choose A Job..." link and navigate to the desired Job.
+ジョブリファレンスのフォームは保存されているジョブの中から選択しやす閲覧画面を提供します。"Choose A Job..." リンクを押し、希望するジョブを選んでください。
 
-Finally, if the Job defines Options, you can specify them in the
-commandline arguments text field and can include variable expansion to pass
-any input options for the current job.  Format:
+最後に、オプションが定義されたジョブならそれらをコマンドライン引数としてテキストフィールドに指定したり、現在のジョブへ入力オプションを渡すための変数として使うことができます。フォーマット：
 
     -optname <value> -optname <value> ...
 
-The format for specifying options is exactly the same as you would pass to the `run` commandline tool, and you can substitute values of input options to the current job. For example:
+オプションを指定するためのフォーマットは `run` コマンドラインツールにてオプションを指定する場合と全く同じです、オプションに対して変数を指定することもできます。例えば：
 
     -opt1 something -opt2 ${option.opt2}
 
-This would set the value "something" for the Job's "opt1" option, and then pass
-the "opt2" option directly from the top-level job to the Job reference.
+この例では、"opt1" オプションに対して、"something" をセットし、"opt2" オプションをトップレベルのジョブからジョブリファレンスに直接渡しています。
 
-This is similar to calling the other Job with [run](../manpages/man1/run.html):
+これは [run](../manpages/man1/run.html) を用いて他のジョブを呼ぶことに似ています：
 
     run [filter-options] -j group/jobname -- -opt1 something -opt2 somethingelse
 
-If the Job has required Options that are not specified on the arguments line,
-then a "defaultValue" of that option will be used if it is defined.  If a
-required option does not have a default value, then the execution will fail
-because the option is not specified.
+ジョブがオプションを必要としていて、それが指定されていない場合 "defalutValue" が定義されていればそれを使います。オプションが "defaultValue" を持っていない場合、必要なオプションが指定されていないということでジョブの実行は失敗します。
 
-## Reordering steps
+## ステップの順番を変える
 
-The order of the Workflow steps can be modified by hovering over any
-step and then clicking and dragging the double arrow icon to the
-desired position. A blue horizontal bar helps highlight the position
-where the Job will land.
+ジョブのアローアイコンをドラッグ & ドロップして好きな場所に移動することで各ステップの順番を編集できます。青い水平線バーは、ドラッグしているジョブがどこに置かれるか分かりやすくしてくれます。
 
 ![Job step reorder](../figures/fig0408.png)
 
-After releasing the select Job, it will land in the desired position
-and the step order will be updated.
+選択したジョブをドロップすると希望する位置に着き、ステップの順番が更新されます。
 
-If you wish to Undo the step reordering, press the "Undo" link above
-the steps. 
+ステップの順番変更を元に戻したい場合は、各ステップの上にある "Undo" リンクを押してください。
 
-The "Redo" button can be pressed to reapply the last undone change.
+"Redo" ボタンは最新の "Undo" によって元に戻したものを再度変更しなおします。
 
-Press the "Revert All Changes" button to go back to the original step order.
+"Revert All Changes" ボタンを押すと、全ての変更を戻してオリジナルの状態に戻します。
 
-## Save the changes
+## 変更の保存
 
-Once the Workflow steps have been defined and order, changes are
-permanently saved after pressing the "Create" button if new or the
-"Update" button if the Job is being modified.
+一旦ワークフローステップが定義され順番が決められると、ワークフローを新規作成する場合は "Create" ボタン、既にあるワークフローの編集の場合は "Update" ボタンによって変更を保存できます。
 
-## Context Variables
+## コンテキスト変数
 
-When a Job step is executed, it has a set of "context" variables that you can access in the Job step. There are several sets of context variables, including: the Job context `job`, the Node context `node`, and the Option context `option`.
+あるジョブステップは実行される際、ジョブステップ自身にアクセス可能なある "context" 変数のセットを持っています。ジョブコンテキスト `job` ・ノードコンテキスト `node` ・オプションコンテキスト `option` といったいくつかのコンテキスト変数があります。
 
-Job context variables:
+ジョブコンテキスト変数:
 
-* `job.name`: Name of the Job
-* `job.group`: Group of the Job
-* `job.id`: ID of the Job
-* `job.execid`: ID of the current Execution
-* `job.username`: Username of the user executing the Job
-* `job.project`: Project name
+*   `job.name`: ジョブの名前
+*   `job.group`: ジョブのグループ
+*   `job.id`: ジョブの ID
+*   `job.execid`: 現在の実行 ID 
+*   `job.username`: ジョブを実行しているユーザー名
+*   `job.project`: プロジェクト名
 
-Node context variables:
+ノードコンテキスト変数:
 
-* `node.name`: Name of the Node being executed on
-* `node.hostname`: Hostname of the Node
-* `node.username`: Usernae of the remote user
-* `node.description`: Description of the node
-* `node.tags`: Comma-separated list of tags
-* `node.os-*`: OS properties of the Node: `name`,`version`,`arch`,`family`
-* `node.*`: All Node attributes defined on the Node.
+*   `node.name`: ジョブが実行されているノード名
+*   `node.hostname`: ノードのホスト名
+*   `node.username`: リモートユーザー名
+*   `node.description`: ノードの説明
+*   `node.tags`: カンマ区切りのタグ
+*   `node.os-*`: ノードの OS 属性 : `name`, `version`, `arch`, `family`
+*   `node.*`: ノードに定義されている全てのノード属性
 
-Option context variables are referred to as `option.NAME` (more about [Job Options](job-options.html) in the next chapter.)
+オプションコンテキスト変数は、`option.NAME` として参照します（詳細については次のチャプターの[ジョブオプション](job-options.html)を見てください。）
 
-### Context Variable Usage
+### コンテキスト変数の使用方法
 
-Context variables can be used in a few ways in a Job step, with slightly different sytanxes:
+ジョブステップの中でコンテキスト変数を使う方法がいくつかあり、それぞれ文法が微妙に違います:
 
-* Commands, Script Arguments and Job Reference Arguments
+*   コマンドやスクリプトの引数とジョブリファレンスの引数
 
     :     `${ctx.name}`
 
-* Inline Script Content (*see note*)
+*   インラインのスクリプトコンテンツ （*注釈を参照*）
 
     :     `@ctx.name@`
 
-    **Note**: The "Inline Script Content" variable expansion is **not** available for "Script File" steps.  The Script File is not rewritten at all when used for execution.
+    **注** : インラインスクリプトコンテンツの変数展開は *Script File* ステップでは行え**ません**。スクリプトファイルは実行時に変数展開されるわけではないからです。
 
-* Environment Variables (*see note*)
+*   環境変数 （*注釈を参照*）
 
     :     `$RD_CTX_NAME`
 
-    The syntax for Environment variables is that all letters become uppercase, punctuation is replaced with underscore, and the name is prefixed with `RD_`.
+    環境変数用の文法では、文字が全て大文字になり、句読点がアンダースコアに置き換えられ、名前に接頭辞 `RD_` が付きます。
+    **注** : SSH サーバーに必要なことについては、[管理者向けガイドの SSH チャプター リモートコマンドを通して環境変数を渡す](#リモートコマンドを通して環境変数を渡す)を参照してください。
 
-    **Note**: See the chapter [Administration - SSH - Passing Environment Variables Through Remote Commands](../administration/ssh.html#passing-environment-variables-through-remote-command) for information about requirements of the SSH server.
+## まとめ
 
-## Summary
+ここまでであなたはもうジョブワークフローがどういったものか、具体的にはワークフローの定義の仕方やどんなジョブステップを追加する事ができるかといったことを理解しています。
 
-At this point you should understand what a Job workflow is, the kinds
-of steps they can contain and how to define a workflow.
-
-Next, we'll cover more about Rundeck's Job Option features.
+次のチャプターでは、Rundeck のジョブオプションの機能をカバーしていきます。
