@@ -1,80 +1,36 @@
-% Rundeck by Example
+% 例から学ぶ Rundeck
 % Alex Honor; Greg Schueler
 % November 20, 2010
 
-This chapter presents working examples reflecting a variety of
-solutions you can create with Rundeck. Helping you apply concepts
-and features introduced in earlier chapters is the focus of these examples.
-Rather than make the examples abstract, they are set in the context
-of Acme Anvils, a fictitious organization that manages an online application. 
+この章では、Rundeck を用いた様々なソリューションを表す実践例を説明します。出てくる例は、これまでの章で紹介した概念や機能を実践する際の助けとなることに焦点を当てています。抽象的な例を挙げるのではなく、オンラインアプリケーションサービスを経営する架空の組織 Acme Avils の状況に合わせた例を挙げていきます。
 
 ## Acme Anvils 
 
-Acme Anvils is a hypothetical start up selling new and used anvils from
-their web site.  Two teams inside the company are involved with the
-development and support of the anvil sales application. Being a new
-company, there isn't much control over access to
-the live environment. Either team can make changes to systems which
-has led to mistakes and outages. Because the senior management is so
-enthusiastic, they push the teams to deliver new features as
-frequently as possible. Unfortunately, this has led to another
-problem: the Acme Anvil web site is an unstable memory 
-hog and requires occasional restarts.  
+Acme Anvils はオンラインで新品・中古の金敷き台 (anvils) を売っている架空のスタートアップです。会社の中には金敷き台を売るアプリケーションの開発とサポートに関わる 2 つのチームが存在します。まだ新しい会社なので、本番環境へのアクセスはしっかり管理されていません。どちらのチームにもソースコードの変更によってミスや障害を起こす可能性があります。シニアマネージャー達がチームに新しい機能のリリースを出来る限り頻繁にさせようと夢中になっているからです。残念ながら、これは別の問題を引き起こしていました：Acme Anvil のウェブサイトは、メモリを大量に喰い、偶発的にリスタートが起こっていたのです。
 
-There are actually two methods to the restart procedure depending
-on the problem: "kill" versus "normal". The "kill" restart is required
-when the application becomes totally unresponsive. The "normal" restart
-occurs when the application needs to free memory.
+リスタート処理には 2 つの方法があります: "kill" と "normal" です。"kill" でのリスタートには、アプリケーションが一切レスポンスしなくても良い時間が必要になります。"normal" でのリスタートには、十分な量のメモリを必要とします。
 
-Depending on the urgency or the staff on hand, either a developer or
-an administrator conducts the restart, albeit differently. Because the
-developers write the software, they understand the restart
-requirements from an application perspective. The administrators on
-the other hand, are not always informed of these requirements but are
-well versed in restarting the application from a systems
-perspective. This has led to a divergence in procedures and has become
-the main source of problems that affect their customers.
+緊急事態または急いでいる状況下で、開発者がリスタートの実行を行うのか、システムの管理者がリスタートの実行を行うのかは全く別物です。なぜならソフトウェアを書いている開発者は、アプリケーションの観点からリスタートの必要性について理解しており、一方それらの必要性を知らされてないシステム管理社はシステムの観点からリスタートについて理解しています。これがやり方の違いを生む、顧客に対して影響を及ぼす主原因でした。
 
-An administrator, tired of the late night calls to restart the
-application, and frustrated by the knowledge gap between operations and
-development has decided to take the initiative come up with a better
-approach.
+あるシステム管理者はアプリケーションをリスタートさせるよう深夜に電話がかかってくることにうんざりしていました。また開発と運用の知識の溝にイライラしていました。彼はもっと良いアプローチでやっていくために先導を取っていくことを決めました。
 
-## Rundeck set up
+## Rundeck のセットアップ
 
-The administrator chooses a machine with access to the servers in
-the live environment and installs the Rundeck software there.
+管理者は本番環境のサーバーにアクセスするためのマシンを用意してそこに Rundeck をインストールすることにしました。
 
-A project called "anvils" is created to manage the application support
-activities. 
+アプリケーションサポートに関することを管理するためにプロジェクト名 "anvils" を作りました。
 
-The administrator creates the project using the
-[rd-project](../manpages/man1/rd-project.html) shell tool though this could be done with the
-Rundeck GUI (see ([project setup](rundeck-basics.html#project-setup)). 
-After logging into the Rundeck server, the command is run:
+管理者はシェルツール [rd-project](../manpages/man1/rd-project.html) を使ってプロジェクトを作成します。これは Rundeck GUI ([プロジェクトのセットアップ](rundeck-basics.html#rundeck+のセットアップ)を参照)からでも可能です。Rundeck サーバーにログインし、以下のコマンドを実行します:
 
     rd-project -p anvils -a create
 
-This initialized the "anvils" project in Rundeck so it only
-contains information about the server node. Adding information about
-the nodes deployed in the live environment is the next step 
-(see [resource model](getting-started.html#resource-model)).
+このコマンドにより "anvils" プロジェクトが Rundeck 上に作られ、そこには Rundeck サーバーに当たるノード情報のみが含まれています。本番環境に置かれたノード情報の追加についてはこれから説明します。([リソースモデル](getting-started.html#リソースモデル) を参照)
 
-The environment has five nodes: anv1-anv5. Anvils is a three tier
-application and has web, application and database components installed
-across the five nodes.
+本番環境には anv1 から anv5 までの 5 つのノードが存在します。アプリケーションは 3 階層あります。ウェブ、アプリケーション、データベースのコンポーネントが 5 つのノードにまたがってインストールされています。
 
-Additionally, the administrator decides to incorporate a recent
-convention to use different system logins to execute SSH commands
-to control running application components. The web component are run
-as the "www" user while the app and database components run as user
-"anvils".  
+さらに管理者はアプリケーションのコンポーネントをコントロールする SSH コマンドを実行するのに、それぞれ違ったログインユーザーを使うようルールを敷くことに決めます。ウェブコンポーネントには "www" というユーザー、アプリケーションとデータベースコンポーネントには "anvils" というユーザーを用います。
 
-With this information in hand, the administrator prepares the project
-resource model using the [resource-v13(5) XML](../manpages/man5/resource-v13.html) or
-[resource-v13(5) YAML](../manpages/man5/resource-yaml-v13.html) document format. The file listing
-below contains the node definitions for the five nodes -- 
-anv1, anv2, anv3, anv4, anv5:
+このルールをきちんと管理するために、管理者は [resource-v13(5) XML](../manpages/man5/resource-v13.html) または [resource-v13(5) YAML](../manpages/man5/resource-yaml-v13.html) を使ったプロジェクトリソースモデルを準備します。下記の定義ファイルには、5 つのノードの定義がリストアップされています -- anv1, anv2, anv3, anv4, anv5
 
 File listing: resources.xml
 
@@ -98,115 +54,69 @@ File listing: resources.xml
          hostname="anv5.acme.com"  username="anvils" tags="db"/> 
     </project>
 
-Reviewing the XML content one sees the XML tag set represent
-the host information described above. A logical name for each node is defined
-with the ``name`` attribute (eg name="anv1"). 
-The address used by SSH is set with
-``hostname`` (eg hostname="anv1.acme.com") while the login
-used to execute SSH commands has been specified with the
-``username`` attribute (username="www" vs
-username="anvils"). The value for the ``tags`` attribute
-reflects the node function  (tags="web" vs tags="app").
+XML コンテンツを見てみると、全体に渡って XML タグでホスト情報が表されています。各ノードの論理名は、``name`` 属性に定義します。(例 name="anv1") ``hostname`` 属性で定義されたアドレス(例 hostname="anv1.acme.com") は ``username`` 属性にて指定されたログインユーザー(例 username="www")が SSH コマンドを実行する際に利用されます。``tags`` 属性で定義された値は、ノードの役割/機能を表しています。(例 tags="web" vs tags="app")
 
-The administrator saves the file and places it in a path of his
-choice. To make Rundeck aware of it, the administrator modifies the
-project configuration file,
-$RDECK_BASE/projects/anvils/etc/project.properties, modifying the
-``project.resources.file`` setting :
+管理者は彼が決めたパスにファイルを保存します。Rundeck にそのファイルを認識させるために、プロジェクトの設定ファイルを編集する必要があります、`$RDECK_BASE/projects/anvils/etc/project.properties` の `project.resources.file` を編集します:
 
     project.resources.file = /etc/rundeck/projects/anvils/resources.xml
    
-With the resources file in place and the project configuration updated, the
-administrator has finished with the resource model preparation and can begin
-dispatching commands.
+リソースファイルを置きプロジェクト設定を更新すれば、管理者としてのリソースモデルの準備とディスパッチコマンドを実行する準備が整ったことになります。
 
-List all the nodes in the anvils project by opening the Filter and
-typing ``.*`` in the *Name* field and then press "Filter". 
-You should see a listing of 6 nodes.
+フィルタを開け、``.*`` を名前フィールドに入力し、"Filter" を押して、anvils プロジェクトのすべてのノードをリストアップします。6 つのノードが出ているはずです。
 
 ![Anvils resources](../figures/fig0601.png)
 
-## Tag classification and command dispatching
+## タグ付けとコマンドディスパッチング
 
-With tags that describe application role, commands can be targeted
-to specific sub sets of nodes without hard coding any
-hostnames. 
-The [dispatch](../manpages/man1/dispatch.html) command's listing feature illustrates
-how tag filtering selects particular node sets in the shell:
+アプリケーションの役割を表すタグを使うと、ターゲットとなるホスト名を一切ハードコーディングせずにコマンド実行が可能になります。[dipatch](../manpages/man1/dispatch.html) コマンドにて、指定したタグによりフィルタリングされたノードセットをリストアップできます:
 
-Use the ``tags`` keyword to list the web nodes:
+web ノードをリストアップするタグのキーワードを使います:
 
     dispatch -p anvils -I tags=web
     anv1 anv2
     
-List the app nodes:
+app ノードのリストアップ:
 
     dispatch -p anvils -I tags=app
     anv3 anv4
 
-List the db nodes:
+db ノードのリストアップ:
 
     dispatch -p anvils -I tags=db
     anv5
 
-Use the "+" (AND) operator to list the web and app nodes:
+"+" (AND) 演算子を使って web と app ノードをリストアップします:
 
     dispatch -p anvils -I tags=web+app
     anv1 anv2 anv3 anv4
 
-Exclude the web and app nodes:
+web と app ノードを除きます
 
     dispatch -p anvils -X tags=web+app
     anv5
 
-Using a wildcard for node name, list all the nodes:
+ノード名にワイルドカードを使って、全てのノードをリストアップします:
 
     dispatch -p anvils -I '.*' 
     anv1 anv2 anv3 anv4 anv5 
 
-Here's an example using filters in the graphical console:
+以下の図はグラフィカルコンソールでのフィルタリングの使用例です。
 
 ![Anvils filtered list](../figures/fig0602.png)
 
-Filtering with tags provides an abstraction over hostnames
-and lets the administrator think about scripting process using loose
-classifications. New nodes can be added, others decommissioned while
-others given new purpose, and the procedures stay unchanged because
-they are bound to the filtering criteria. 
+タグによるフィルタリング機能によってホスト郡が抽象化され、管理者はゆるやかな分類を使ったスクリプトの処理について考えられます。新しいノードの追加も可能ですし、既に役割を与えられているホスト郡からその役割を外すことも可能です、そして、それぞれフィルタリング条件に紐づけられるため、各役割における処理に影響はありません。
 
-This simple classification scheme will allow the developers and
-administrators to share a common vocabulary when talking about the kinds
-of nodes supporting the Anvils application.
+この簡単な分類の仕組みは、開発者と管理者に Anvils アプリケーションのノードについて話す際の共通用語となります。
 
-## Jobs
+## ジョブ
 
-Jobs are a convenient method to establish a library of routine
-procedures. By its nature, a saved Job encapsulates a process into a
-logically named interface. Jobs can begin as a single item workflow
-that calls a small or large shell script but evolve into a multi-step
-workflow. One job can also call another job as a step in its
-workflow. Using this approach one can view each Job as a reusable
-building block upon which more complex automation can be built.
+ジョブは繰り返し実行する処理のライブラリをつくる便利な方法です。その性質上、保存されたジョブは処理をカプセル化する働きをします。ジョブは小さな、または大きなシェルスクリプトを呼ぶような 1 つのワークフローから、マルチステップのワークフローまで扱う事が出来ます。各ジョブを再利用可能な処理のブロックとして捉えると、より複雑な自動化を構築することができます。
 
-The administrator decides Jobs can be used to encapsulate
-procedures to manage the restart process. Both developers and
-administrators can collaborate on their definition and evolution and
-maintenance. 
+起動とシャットダウンの処理の管理用として既に 2 つのスクリプトセットが存在していました。管理者は、どちらのスクリプトの方が優れているかといったことを強要することよりも、ジョブワークフローによってどのようにスクリプトがカプセル化されるかを簡単に示すために骨組みを作ることに専念しました。このシンプルなフレームワークについてのデモを行った後、管理者はジョブの定義に両方のスクリプト合わせた一番いいものを入れるにはどうしたらいいか議論することができます。
 
-Two sets of scripts are already in use to manage the startup and shutdown
-procedures. Rather than force the issue as to
-which one is correct or superior, the administrator focuses on
-creating a skeleton to more easily present how scripts can be
-encapsulated by the job workflow. After demonstrating this simple
-framework, the administrator can discuss how to incorporate the best
-of both script implementations into the Job definitions.
+管理者は、骨組みとして実行しようとしていることと、与えられた引数をただ echo するだけのシンプルなプレースホルダースクリプトを作りました - start.sh と stop.sh - リスタートの処理を 2 つのステップで表現しています。
 
-For the skeleton, the administrator creates simple placeholder scripts
-that merely echo their intent and the arguments passed to the them.
-Two scripts - start.sh and stop.sh - represent the two steps of
-the restart process.
-
-Scripts:
+スクリプト:
 
 File listing: start.sh
 
@@ -220,44 +130,29 @@ File listing: stop.sh
     # Usage: $0 [normal|kill]
     echo Web stopped with method: $1.
 
-Because either the normal or kill can be specified for the
-"method" option, the Jobs will need to pass the user's choice as an
-argument to the script.
+"method" オプションにて normal または kill のどちらの方法か指定できるようになっているため、ユーザーはスクリプトに引数を与える必要があります。
 
-There is no script for the restart process itself since that will be
-defined as a Job workflow.
+リスタート処理はジョブワークフローとして定義されるため、リスタートの処理にそのまま対応するスクリプトは存在しません。
 
-### Job structure
+### ジョブの構造
 
-With an idea of the restart scripts in mind, the next step is
-to define a job to encapsulate the restart procedure. Though the overall goal
-is to provide a single restart procedure, for the sake of reusability, it
-might be preferred to break each step of the process into separate jobs.
+リスタートスクリプトのアイデアを念頭に置き、次のステップでは、リスタートの処理を含んだジョブの定義をします。最終的なゴールは、リスタートの処理をひとつ提供し、再利用できるように各ステップ毎にジョブを分けた方がいいでしょう。
 
-Using this approach the administrator imagines the following jobs:
+管理者は以下のようなアプローチをイメージしています:
 
-* start: call the start.sh script to start the web service
-* stop: call the stop.sh script to stop the web service
-* Restart: calls the jobs: stop, start
+*   スタート: ウェブサービスをスタートさせるために start.sh スクリプトを実行する
+*   ストップ: ウェブサービスをストップさせるために stop.sh スクリプトを実行する
+*   リスタート: ストップジョブ、スタートジョブの順番で実行する
 
-Since the restart procedure is the primary focus, it is capitalized
-for distinction.
+リスタートの処理が優先的であるため、大文字にして差別化しています。
 
-The extra complexity from defining a job for every individual step can
-pay off later, if those steps can be recombined with future jobs to
-serve later management needs. How far a process is decomposed into
-individual jobs is a judgement balancing maintenance requirements
-and the desire for job reuse.
+後々の管理を考えて将来出てくるジョブと既存のジョブが結合できるようジョブを全ての個々のステップ毎に定義しようとすると大変複雑になってきますが、これは後からでもできることです。どのように処理を個々のジョブに分解するかは、保守性と再利用性のバランスを考えて決めます。
 
-### Job grouping
+### ジョブのグルーピング
 
-Though not a requirement, it is helpful to use job groups and 
-have a convention for naming them. 
-A good convention assists others with a navigation scheme that
-helps them remember and find the desired procedure.
+絶対必要というわけではないですが、ジョブのグルーピングとその命名規則を決めておくと便利です。優れた命名規則は名前を思い出しやすく、探している処理を見つけやすくしてくれます。
 
-The administrator chooses to create a top level group named
-"/anvils/web/" where the web restart related jobs will be organized.
+管理者はウェブサービスのリスタートに関連するジョブが置かれるトップレベルのグループを "/anvils/web" という名前にしました。
 
     anvils/
     `-- web/
@@ -265,87 +160,57 @@ The administrator chooses to create a top level group named
         |-- start
         `-- stop
 
-After choosing the "anvils" project users will see this
-grouping of jobs.
+"anvils" プロジェクトを選択後、このジョブグループがあることがわかります。
 
 ![Anvils job group](../figures/fig0604.png)
 
-## Job option
+## ジョブのオプション
 
-To support specifying the restart method to the scripts,
-the the three jobs will declare an option named "method".
-Without such a parameter, the administrator would be forced to
-duplicate restart Jobs for both the kill and normal stop methods.
+スクリプトにてリスタートの方法を指定するために、先ほどの 3 つのジョブにて "method" というオプションを作ります。それらのパラメーターが無い場合、管理者は kill と normal の両方のストップ方法についてリスタートジョブを用意することになります。
 
-Another benefit from defining the job option is the ability to display a
-menu of choices to the user running the job.  Once chosen, the value
-selected by the menu is then passed to the script.
+ジョブオプションを定義するもう一つのメリットは、ジョブを実行しようとした際に選択肢のひとつとしてメニューに表示されることです。選択するとメニューから選択した値がスクリプトに渡されます。
 
-### Allowed values
+### 許可された値
 
-An option can be defined to only allow values from a specified
-list. This places safe guards on how a Job can be run by limiting
-choices to those the scripts can safely handle.
+定義できるオプションは、指定されたリスト内にあるものに限ります。これは安全にスクリプトを利用できるようパラメーターの選択肢を制限してジョブを実行するセーフガードの役割を担います。
 
-The administrator takes advantage of this by limiting the "method" option
-values to just  "normal" or "kill" choices.
+管理者はこれを利用して、"normal" または "kill" のみ選択可能になるよう "method" オプションにて制限をかけます。
 
-The screenshot below contains the Option edit form for the "method" option.
-The form includes elements to define description and default
-value, as well as, Allowed Values and Restrictions.
+以下のスクリーンショットは、"method" オプションを編集しているところです。フォームにはオプションの説明とデフォルトの値だけでなく、Allowed Values (許可された値) と Restrictions (制限) の項目が入っています。
 
 ![Option editor for method](../figures/fig0605.png)
 
-Allowed values can be specified as a comma separated list as seen above but
-can also be requested from an external source using a "remote URL".
+上述のように 許可された値はカンマ区切りのリストで指定できます、また "remote URL" を使った外部リソースからも可能です。
 
-Option choices can be controlled using the "Enforced from values"
-restriction. When set "true", the Rundeck UI will only present a
-popup menu. If set "false", a text field will also be presented. Use
-the "Match Regular Expression" form to validate the input option.
+"Enforced from Allowed values (許可された値のみという強要)" という制約を使ってオプションの選択肢を管理できます。"true" をセットしたとき、Rundeck UI は許可された値のみ選択可能なようポップメニューだけ表示されます。"false" をセットしたときは、テキストフィールドも表示されます。"Match Regular Expression" を使って入力をバリデートすることもできます。
 
-Here's a screenshot of how Rundeck will display the menu choices:
+Rundeck がどのようにメニューの選択肢を表示するかのスクリーンショットが以下になります。
 
 ![Option menu for method](../figures/fig0606.png)
 
+### オプションデータへのスクリプトからのアクセス
 
-### Script access to option data
+オプション値は引数または参照値としてスクリプトに渡す事ができ、スクリプト内で名前を付けたトークンとして利用できます。例えば、"method" オプションの値にアクセスするにはいくつかの方法があります:
 
-Option values can be passed to scripts as an argument or referenced
-inside the script using a named token. For example, the value for the
-"method" option selection can be accessed in one of several ways:
+環境変数として参照する:
 
-Value referenced as an environment variable:
+*   Bash: $CT\_OPTION\_METHOD
 
-* Bash: $CT\_OPTION\_METHOD
+``srciptargs`` タグを使ってスクリプトやコマンドの引数として値を渡します:
 
-Value passed in the argument vector to the executed script or command
-via the ``scriptargs`` tag:
+*   Commandline Arguments: ${option.method}
 
-* Commandline Arguments: ${option.method}
+スクリプト内である名前が作られたトークンとして値が展開され、実行前に置き換わります:
 
-Value represented as a named token inside the script and replaced
-before execution:  
+*   Script Content: @option.method@
 
-* Script Content: @option.method@
+## ジョブワークフローを作る
 
-      
-## Job workflow composition
+リスタート処理を管理するのに必要なスクリプトとオプションを理解した上で、ジョブの定義を作っていくのが最後のステップになります。
 
-With an understanding of the scripts and the option needed to
-control the restart operation, the final step is to compose the Job
-definitions. 
+Rundeck の GUI からもドキュメントフォーマット [job-v20(5)](../manpages/man5/job-v20.html)に従った XML 形式で各ジョブを定義できます。このドキュメントフォーマットには Rundeck GUI フォームの中での選択肢に相当するタグセットについても書かれています。
 
-While each job can be defined graphically in Rundeck, each can
-succinctly be defined using an XML file conforming to the
-[job-v20(5)](../manpages/man5/job-v20.html) document format. This 
-document contains a set of tags corresponding to the choices seen in
-the Rundeck GUI form.
-
-Below are the XML definitions for the jobs. One or more jobs can be
-defined inside a single XML file but your convention will dictate how to
-organize the definitions. The files can be named any way desired and
-do not have to correspond to the Job name or its group.
+以下にあるのはジョブについての XML の定義です。1 つの XML ファイルに 1 つ以上のジョブが定義できますが、どのように定義するかはあなたが決めるルール次第です。ファイルも好きなように名前を付けることが出来ます、必ずしもジョブ名やそのグループに相当する名前である必要はありません。
 
 File listing: stop.xml
 
@@ -382,11 +247,7 @@ File listing: stop.xml
          </job>
     </joblist>
 
-
-Defines Job, /anvils/web/stop, and executes the shell script to
-Nodes tagged "web". Using the ``scriptargs`` tag, the shell
-script is passed a single argument, ``${option.method}``,
-containing the value chosen in the Job run form.
+/anvils/web/stop というジョブを定義します、これは "web" というタグが付いたノードに対してシェルスクリプトを実行します。``scripttags`` を使ってシェルスクリプトにジョブの実行フォームから選択された値を含んだ引数 ``${option.method}`` をひとつ渡します。
 
 File listing: start.xml
 
@@ -417,9 +278,7 @@ File listing: start.xml
       </job>
     </joblist>
 
-Defines Job, /anvils/web/start, that also executes a shell script to
-Nodes tagged "web".
-
+/anvils/web/start というジョブを定義します、これは "web" というタグが付いたノードに対してシェルスクリプトを実行します。
 
 File listing: restart.xml
 
@@ -450,26 +309,19 @@ File listing: restart.xml
        </job>	
     </joblist>
 
+/anvils/web/Restart というジョブを定義します、これは ``jobref`` タグを用いて連続するジョブ郡を実行します
 
-Defines Job, /anvils/web/Restart, that executes a sequence of Job calls,
-using the ``jobref`` tag.
+今回は `<nodefilters>` または `<dispatch>` の項目を定義していないことに注意してください、今回はこの連続実行をサーバー上で**一度だけ**しか行わないからです。ジョブリファレンスはそれぞれ 1 回呼ばれ、"start" と "stop" ジョブはそれぞれ定義されているノードに対してディスパッチされます。
 
-Note that we don't define a `<nodefilters>` or `<dispatch>` section, because we
-only want this sequence to execute **once**, on the server node.  The Job
-references will each be called once, and the "start" and "stop" Jobs will
-each be dispatched to the nodes they define.
+XML の定義ファイルを Rundeck サーバーに保存すると、[rd-jobs](../manpages/man1/rd-jobs.html) コマンドを用いてそれらを読み込む事ができます。
 
-Saving the XML definitions files located on the Rundeck server,
-one can load them using the [rd-jobs](../manpages/man1/rd-jobs.html) command.
-
-Run the ``rd-jobs load`` command for each job definition file:
+``rd-jobs`` を実行して各ジョブの定義ファイルからコマンドを読み込みます:
 
     rd-jobs load -f start.xml
     rd-jobs load -f stop.xml
     rd-jobs load -f restart.xml
 
-The ``rd-jobs list`` command queries Rundeck and prints out the list of
-defined jobs:
+``rd-jobs list`` コマンドは Rundeck に定義済みのジョブのリストを出力するよう問い合わせます:
 
     rd-jobs list -p anvils
     Found 3 jobs:
@@ -477,75 +329,45 @@ defined jobs:
 	- start - 'the web start procedure'
 	- stop - 'the web stop procedure'
 
-Of course, the jobs can be viewed inside the Rundeck graphical console by going to
-the Jobs page. Hovering over the "Restart" job name reveals job detail.
+もちろん、これらのジョブは Rundeck のグラフィカルコンソールの Jobs ページからも見る事ができます。ジョブ名 "Restart" の上にホバリングオーバーしてジョブの詳細が表示されます。
 
 ![Anvils restart jobs](../figures/fig0607.png)
 
-You will see the composition of the "Restart" job as a workflow
-calling the jobs: stop and start. The "Restart" job passes the
-``-method`` option value to the lower level stop Job.
+ここまでで、各ジョブ(ストップとスタート)を呼ぶワークフローとして "Restart" ジョブの組み立て方を理解したことでしょう。"Restart" ジョブは ``-method`` オプションの値をより低レベルのストップジョブに渡します。
 
-## Running the job
+## ジョブを実行する
 
-The Jobs can be run from the Rundeck graphical console by going to the
-"Jobs" page. From there, navigate to the "Anvils/web" job group to
-display the three stored Jobs.
+ジョブは Rundeck のグラフィカルコンソールの "Jobs" ページから実行できます。ここから、3 つの保存済みジョブが表示される "Anvils/web" ジョブグループまでナビゲートします。
 
-Clicking the "Run" button for the Restart job, will display the
-options selection page. The menu for the "method" option displays the
-two choices: "normal" and "kill". No other choices can be made, nor a
-textfield for free form entry, because the "method" option was defined
-with the restriction "enforced from allowed values".
+"Run" ボタンをクリックしてジョブをリスタートさせます。するとオプションを選択するページが表示されます。"method" オプションについてのメニューが 2 つの選択肢 "normal" と "kill" を表示しています。他の選択肢や自由に入力できるテキストフィールドは利用できません、"method" オプションが選択肢を限定するように定義されているからです。
 
 ![Restart run page](../figures/fig0608.png)
 
-The jobs can also be started from the command line using the
-[run](../manpages/man1/run.html) shell tool. The job group and name are specified
-using the "-j" parameter. Any options the Job supports are supplied
-after the "--" (double dash) parameter. (The "-p" parameter specifies the project,
-but it can be left out if there is only one project available.)
+シェルツール [run](../manpages/man1/run.html) を使ってコマンドラインからもジョブを起動することができます。"-j" パラメーターを使ってジョブグループとジョブ名を指定してください。ジョブがサポートするあらゆるオプションは "--" パラメーターの後に指定します。("-p" パラメーターはプロジェクトの指定に用います、しかし利用可能なプロジェクトが 1 つしか無い場合は指定しなくてもよいです。)
 
-Run Restart specifying the method, "normal": 
+"normal" メソッドを指定してリスタートジョブを実行します:
 
     run -j "anvils/web/Restart" -p anvils -- -method normal
 
-Run Restart specifying the method, "kill":
+"kill" メソッドを指定してリスタートジョブを実行します:
 
     run -j "anvils/web/Restart" -p anvils -- -method kill
 
+## ジョブのアクセスコントロール
 
-## Job access control
+ジョブの編集または実行へのアクセス管理は、ACL ポリシードキュメントフォーマット（[aclpolicy-v10(5)](../manpages/man5/aclpolicy-v10.html)） を使って定義できます。このファイルは、どのユーザーグループがどんなアクションが行えるのかを記述したポリシー要素で構成されています。この詳細は管理者向けガイドにおける[権限の許可(Authorization)](../administration/authorization.html) の章に載っています。
 
-Access to running or modifying Jobs is managed in an access control
-policy defined using the aclpolicy document format ([aclpolicy-v10(5)](../manpages/man5/aclpolicy-v10.html)). 
-This file contains a number of policy elements that describe what user
-group is allowed to perform which actions. The
-[Authorization](../administration/authorization.html) Chapter of the Administration Guide
-covers this in detail.
+管理者は 2 つのアクセスレベルを定義した ACL ポリシーを使いたいと思っています。最初のレベルはジョブをただ実行することだけが許されます。2 つ目のレベルは、管理者作業とジョブの定義を編集できます。
 
-The administrator wants to use the aclpolicy to define two levels of
-access. The first level, has limited privilege and allows for just
-running jobs. The second level, is administrative and can modify job
-definitions.
+ポリシー機能は、グループまたは利用パターンごとのアクセス管理情報をひとつまたは複数のポリシーファイルにまとめることができます。普通にインストールした Rundeck には 2 つのユーザーグループが定義されています: "admin" と "user" です。そして "admin" グループについてポリシーが作られています。
 
-Policies can be organized into more than one file to help organize
-access by group or pattern of use. The normal Rundeck install will
-define two user groups: "admin" and "user" and have a generated a policy
-for the "admin" group. 
+Acme 社の管理者は、"user" グループに入っている人たちが "anvils" と "anvlis/web" ジョブグループの実行のみ許可されるようなポリシーを 1 つ作る事に決めました。私たちは Rundeck を普通どおりインストールしたときに入っている "user" ログイングループを利用する事が出来ます。
 
-The Acme administrator decides to create a policy that allows users in
-the "user" group to run commands just in the "anvils" and
-"anvils/web" Job groups. We can employ the "user" login and group as
-it was also included in the normal install.
-
-To create the aclpolicy file for the "user" group:
+"user" グループに対してのポリシーファイルを作る方法:
 
     cp $RDECK_BASE/etc/admin.aclpolicy $RDECK_BASE/etc/user.aclpolicy
 
-Modify the `<command>` and `<group>` elements as shown in the example
-below. Notice that just workflow\_read,workflow\_run actions are
-allowed.
+以下の例にあるように `<command>` と `<group>` 要素を編集します。workflow\_read と workflow\_run アクションのみ許可されていることがわかります。
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.xml}
 $ cat $RDECK_BASE/etc/user.aclpolicy
@@ -562,31 +384,22 @@ $ cat $RDECK_BASE/etc/user.aclpolicy
 </policies>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Restart Rundeck to load the new policy file (see [Administration - Startup and Shutdown](../administration/startup-and-shutdown.html)).
+新しいポリシーファイルを読み込ませるために Rundeck をリスタートします。（[管理者向けガイド - 起動とシャットダウン](../administration/startup-and-shutdown.html) を参照してください）
 
     rundeckd restart
 
-Once the Rundeck webapp has started, login as the "user" user (the
-password is probably "user"). Just the Jobs in the "anvils" group are
-displayed in the Jobs page. The "user" user does is not allowed to access
-jobs outside of "/anvils group.
+Rundeck ウェブアプリケーションを起動して、"user" ユーザーとしてログインします (パスワードは多分 "user" )。起動すると Jobs ページに "anvils" グループだけ表示されています。"user" ユーザーは "/anvils" グループ以外のジョブへのアクセス権限はありません。
 
-Notice the absence of the "New Job" button that would be displayed if
-logged in as "admin". Job creation is an action not granted to
-"user". Notice also, that the button bar for the listed Jobs does
-not include icons for editing or deleting the Job. Only workflow\_read
-and workflow\_actions were allowed in the `user.aclpolicy` file.
+"admin" としてログインすると表示される "New Job" ボタンがないことに気付きます。ジョブの作成権限は "user" には付与されていません。また、リストアップされたジョブについてのボタンバーにジョブの編集や削除アイコンが付いていないことにも気付きます。`user.aclpolicy` ファイルにて workflow\_read と workflow\_actions のみ許可されています。
 
+## リソースモデルソースの例
 
-## Resource model source examples
+[管理者向けガイド - ノードリソースソース - リソースモデルソース](../administration/node-resource-sources.html#リソースモデルソース) を参照してください。
 
-See [Administration - Node Resource Sources - Resource Model Source](../administration/node-resource-sources.html#resource-model-source).
+## リソースエディタの例
 
+[管理者向けガイド- ノードリソースソース - リソースエディタ](../administration/node-resource-sources.html#リソースエディタ) を参照してください。
 
-## Resource editor examples
+## オプションモデルプロバイダーの例
 
-See [Administration - Node Resource Sources - Resource Editor](../administration/node-resource-sources.html#resource-editor).
-
-## Option model provider examples
-
-See [Job Options - Option Model Provider](job-options.html#option-model-provider).
+[ジョブオプション - オプションモデルプロバイダ](http://rundeck.org/docs/manual/job-options.html#オプションモデルプロバイダ) を参照してください。
