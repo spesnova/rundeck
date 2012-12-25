@@ -608,9 +608,8 @@ Rundeck は以下に示すビルトインプロバイダをコアに持ってい
 Table: `file` リソースモデルソースプロバイダのプロパティの設定
 
 `format` の値は[リソースモデルドキュメントフォーマット](rundeck-basics.html#リソースモデルドキュメントフォーマット)にてサポートされているものでなければなりません。ビルトインフォーマットは `resourcexml` または `resourceyaml` の 2 つです。
-The built-in formats are: `resourcexml` or `resourceyaml`, but any format provided by a [Resource Format Plugin](plugins.html#resource-format-plugins) can be specified as well.
 
-*Example:*
+*例:*
 
     resources.source.1.type=file
     resources.source.1.file=/home/rundeck/projects/example/etc/resources2.xml
@@ -620,10 +619,11 @@ The built-in formats are: `resourcexml` or `resourceyaml`, but any format provid
     resources.source.1.generateFileAutomatically=true
 
 #### URL Resource Model Source Configuration
+#### URL リソースモデルソース設定
 
-The `url` Resource Model Source provider performs a HTTP GET request to retrieve the Nodes definition.
+`url` リソースモデルソースプロバイダは HTTP GET リクエストでノードの定義を取得します。
 
-Configuration properties:
+設定プロパティ:
 
 Name      Value       Notes
 -----     ------      ------
@@ -632,29 +632,28 @@ Name      Value       Notes
 `timeout` seconds     Number of seconds before request fails due to timeout. `0` means no timeout. (Default: 30) 
 ----------------------------
 
-Table: Configuration properties for `url` Resource Model Source provider
+table: リソースモデルソースプロバイダ `url` 用の設定プロパティ。
 
-The [Resource Model Document Format](rundeck-basics.html#resource-model-document-formats) that is used is determined by the MIME type
-sent by the remote server. The built-in formats accept "\*/xml" and "\*/yaml" and "*/x-yaml". See [Resource Format Plugin](plugins.html#resource-format-plugins).
+[リソースモデルドキュメントフォーマット](rundeck-basics.html#resource-model-document-formats) は リモートサーバに送信される MIME タイプを決定するのに利用されます。ビルトインフォーマットは "\*/xml" と "\*/yaml" と "\*/x-yaml" を受け付けます. [リソースフォーマットプラグイン](plugins.html#resource-format-plugins) を参照してください。
 
-*Example:*
+*例:*
 
     resources.source.1.type=url
     resources.source.1.url=file:/home/rundeck/projects/example/etc/resources2.xml
     resources.source.1.cache=true
     resources.source.1.timeout=0
 
-#### Directory Resource Model Source Configuration
+#### ディレクトリリソースモデルソース設定
 
-The `directory` Resource Model Source provider lists all files in a directory, and loads each one that has a supported file extension
-as File Resource Model Source with all default configuration options.
+The `directory` Resource Model Source provider lists all files in a directory, and loads each one that has a supported file extension as File Resource Model Source with all default configuration options.
+`derectory` リソースモデルソースプロバイダはあるディレクトリにあるすべてのファイルの一覧を表示します。そしてすべてのデフォルト設定オプションを用いてファイルリソースモデルとしてサポートされたファイルエクステンションを持つ各ファイル読み込みます。
 
 Name                          Value                           Notes
 -----                         ------                          ------
 `directory`                   directory path                  All files in the directory that have a supported file extension will be loaded
 ----------------------------
 
-Table: Configuration properties for `directory` Resource Model Source provider
+table: `directory` リソースモデルソースプロバイダ用の設定プロパティ
 
 *Example:*
 
