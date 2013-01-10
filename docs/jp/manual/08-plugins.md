@@ -1034,22 +1034,22 @@ The command executed by script-copy is expected to behave in the following manne
     OR
     * Define the "remote-filepath" as described above
 
-#### Example Scripts
+#### スクリプト例
 
-Here are some example scripts to show the some possible usage patterns.
+利用パターンの参考になるスクリプトの例をいくつか載せます。
 
-**Example script-exec**:
+**script-exec**:
 
-Node definition:
+ノード定義:
 
     mynode:
         node-executor: script-exec
 
-Project config `project.properties` file:
+プロジェクト設定ファイル `project.properties`:
 
     plugin.script-exec.default.command: /tmp/myexec.sh ${node.hostname} ${node.username} -- ${exec.command}
 
-Contents of `/tmp/myexec.sh`:
+`/tmp/myexec.sh` の内容:
 
     #!/bin/bash
 
@@ -1065,19 +1065,19 @@ Contents of `/tmp/myexec.sh`:
 
     exec $REMOTECMD $user@$host $command
 
-**Example script-copy**:
+**script-copy**:
 
-Node definition:
+ノード定義:
 
     mynode:
         file-copier: script-copy
         destdir: /some/node/dir
 
-System-wide config in `framework.properties`:
+`framework.properties` 内のシステムワイド設定:
 
     plugin.script-copy.default.command: /tmp/mycopy.sh ${node.hostname} ${node.username} ${node.destdir} ${file-copy.file}
 
-Contents of `/tmp/mycopy.sh`:
+`/tmp/mycopy.sh` の内容:
 
     #!/bin/bash
 
@@ -1100,10 +1100,10 @@ Contents of `/tmp/mycopy.sh`:
 
     echo "$dir/$name"
 
-**Example system ssh replacement**:
+**ssh リプレースシステム**:
 
-This example uses the system's "ssh" and "scp" commands to perform node execution 
-and file copying, and doesn't make use of an external script file:
+この例ではシステムの "ssh" と "scp" コマンドをノード実行とファイルのコピーに使っています。
+また、外部スクリプトファイルは使用しません:
 
 Node-only configuration:
 
@@ -1119,7 +1119,7 @@ Node-only configuration:
         script-copy: scp ${file-copy.file} ${node.username}@${node.hostname}:${node.destdir}
         script-copy-remote-filepath: ${node.destdir}/${file-copy.filename}
 
-This could all be set as defaults in the project.properties file, such as:
+デフォルト値は全て以下のような project.properties ファイル内のものがセットされます:
 
     # set default node executor
     service.NodeExecutor.default.provider=script-exec
@@ -1136,44 +1136,41 @@ This could all be set as defaults in the project.properties file, such as:
     plugin.script-copy.default.shell: bash -c
     plugin.script-copy.default.remote-filepath: ${node.destdir}/${file-copy.filename}
 
-In which case your node definitions could be as simple as:
+このケースではノード定義は単純です:
 
     mynode:
         hostname: mynode
         username: user1
         destdir: /tmp
 
-### stub-plugin
+### スタブプラグイン
 
-The `stub-plugin` includes these providers:
+`スタブプラグイン` は以下のプロパイダを含んでいます:
 
-* `stub` for the NodeExecutor service
-* `stub` for the FileCopier service
+* NodeExecutor サービスの`スタブ`
+* FileCopier サービスの`スタブ`
 
-(Refer to [Using Providers](plugins.html#using-providers) to enable them.)
+(これらを有効にするには [プロパイダの利用](plugins.html#プロパイダの利用) を参考にして下さい)
 
-This plugin does not actually perform any remote file copy or command execution,
-instead it simply echoes the command that was supposed to be executed, and
-pretends to have copied a file. 
+このプラグインはリモートファイルのコピーやコマンド実行を実際に行うわけではありません。
+コマンドが実行されたかのように単純なエコーを返したり、ファイルがコピーされたように振る舞います。
 
-This is intended for use in testing new Nodes, Jobs or Workflow sequences without
-affecting any actual runtime environment.  
+これは新しいノードやジョブ、ワークフローシーケンスを実際の実行環境に影響を与えずにテストしたい時に利用することを想定しています。
 
-You can also test some failure scenarios by configuring the following node attributes:
+また、以下のノード属性を設定して障害シナリオをテストすることもできます。
 
 `stub-exec-success`="true/false"
 
-:   If set to false, the stub command execution will simulate command failure
+:   false にセットした場合、スタブコマンドの実行は失敗としてシミュレートされます
 
 `stub-result-code`
 
-:   Simulate the return result code from execution
+:   実行結果の戻り値をシミュレートします
 
-You could, for example, disable or test an entire project's workflows or jobs by
-simply setting the `project.properties` node executor provider to `stub`.
+たとえば、単に `project.properties`　ノード executor プロバイダを `stub` に設定するだけでプロジェクトのワークフローやジョブを一通りテストしたり無効化することができます。
 
-## Plugin Development
+## プラグイン開発
 
-Plugins can be developed easily using scripts, or you can use Java.
+プラグインはスクリプトを使ってカンタンに開発できます。Java も利用可能です。
 
-See more information in the [Developer Guide - Plugin Development](../developer/plugin-development.html) chapter.
+詳細については [デベロッパーガイド - プラグイン開発](../developer/plugin-development.html) を参照して下さい。
