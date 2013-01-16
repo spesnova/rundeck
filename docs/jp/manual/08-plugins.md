@@ -979,11 +979,10 @@ file located at `$RDECK_BASE/projects/NAME/etc/project.properties`.
 Similarly for the `$RDECK_BASE/etc/framework.properties` file to apply to all
 projects.
 
-#### Defining the script-copy filepath
+#### script-copy ファイルパスの定義
 
-The value of this property or attribute should be the complete filepath on
-the target node where the copied file is placed. This is to tell the FileCopier service where the remote file exists after your script copies it over, so that it
-can later be executed.
+このプロパティもしくは属性の値は、対象のノード上にあるファイルのフルパスでなければなりません。
+スクリプトがコピーしたファイルは後から実行できるので、それを FileCopier サービスに伝えるためのものです。
 
 You can do this in *two* ways, either as a configuration property as described here, or via output from your script, as described under [Requirements of script-copy command](plugins.html#requirements-of-script-copy-command).
 
@@ -1023,16 +1022,16 @@ file located at `$RDECK_BASE/projects/NAME/etc/project.properties`.
 Similarly for the `$RDECK_BASE/etc/framework.properties` file to apply to all
 projects.
 
-#### Requirements of script-copy command
+#### script-copy コマンドの要件
 
-The command executed by script-copy is expected to behave in the following manner:
+script-copy によって実行されるコマンドは以下のマナーに沿うことを求められます。
 
-* Exit with an exit code of "0" to indicate success
-* Exit with any other exit code indicates failure
-* **Either**
-    * Output the filepath of the copied file on the target node as the first line of output on STDOUT
-    OR
-    * Define the "remote-filepath" as described above
+* 問題なく成功したときは終了コード "0" を返すこと
+* 失敗したときはそれ以外の終了コードを返すこと
+* **同義**
+    * ターゲットノード上にコピーされたファイルのパス出力を STDOUT の1行目に出すこと
+    もしくは
+    * 上記を "remote-filepath" として定義すること
 
 #### スクリプト例
 
