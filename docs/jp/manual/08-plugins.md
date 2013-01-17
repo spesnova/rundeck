@@ -645,7 +645,6 @@ table: リソースモデルソースプロバイダ `url` 用の設定プロパ
 
 #### ディレクトリリソースモデルソース設定
 
-The `directory` Resource Model Source provider lists all files in a directory, and loads each one that has a supported file extension as File Resource Model Source with all default configuration options.
 `derectory` リソースモデルソースプロバイダはあるディレクトリにあるすべてのファイルの一覧を表示します。そしてすべてのデフォルト設定オプションを用いてファイルリソースモデルとしてサポートされたファイルエクステンションを持つ各ファイル読み込みます。
 
 Name                          Value                           Notes
@@ -660,10 +659,11 @@ table: `directory` リソースモデルソースプロバイダ用の設定プ�
     resources.source.2.type=directory
     resources.source.2.directory=/home/rundeck/projects/example/resources
     
-#### Script Resource Model Source Configuration
+#### スクリプトリソースモデルソース設定
 
-The `script` Resource Model Source provider executes a script file and reads
-the output of the script as one of the supported [Resource Model Document Formats](rundeck-basics.html#resource-model-document-formats).
+The `script` Resource Model Source provider executes a script file and reads the output of the script as one of the supported [Resource Model Document Formats](rundeck-basics.html#resource-model-document-formats).
+
+`script` リソースモデルソースプロバイダはあるスクリプトファイルを実行します。そしてサポートされている [Resource Model Document Formats](rundeck-basics.html#resource-model-document-formats)の一つとしてその実行結果を読み込みます。
 
 Name             Value                           Notes
 -----            ------                          ------
@@ -674,15 +674,15 @@ Name             Value                           Notes
 ----------------------------
 
 Table: Configuration properties for `script` Resource Model Source provider
+Table: `script` リソースモデルプロバイダの設定プロパティ
 
-The script will be executed in this way:
+スクリプトはこのように実行されます:
 
     [interpreter] file [args]
 
-All output on STDOUT will be passed to a Resource Format Parser to parse.  The
-format specified must be available.
+STDOUT 上のすべての出力はパースのためにリソースフォーマットパーサに渡されます。利用可能なフォーマットが指定されている必要があります。
 
-*Example:*
+*例:*
 
     resources.source.2.type=script
     resources.source.2.file=/home/rundeck/projects/example/etc/generate.sh
@@ -690,91 +690,77 @@ format specified must be available.
     resources.source.2.args=-project example
     resources.source.2.format=resourceyaml
 
-### Resource Format services
+### リソースフォーマットサービス
 
-Resource Format services (Generators and Parsers) typically come in matched 
-pairs, with both a parser and generator for the same format name.
+リソースフォーマットサービス（ジェネレータとパーサ）は一般的に同じフォーマット名に対して用いられるマッチするペアとなっています。
 
-Rundeck includes these built-in providers in the core installation:
+Rundeck はこれらのビルトインプロバイダを含んでいます:
 
 `resourcexml`
 
-:    Supports the Resource XML document format: [resource-v13(5) XML](../manpages/man5/resource-v13.html).
+:    リソース XML ドキュメントフォーマットをサポートしています: [resource-v13(5) XML](../manpages/man5/resource-v13.html).
 
-    Supported MIME types:
+    サポートされている MIME タイプ:
 
     * Generator: "text/xml"
     * Parser: "*/xml"
 
-    Supported File extensions:
+    サポートされているファイルエクステンション:
 
     * ".xml"
 
 `resourceyaml`
 
-:    Supports the Resource YAML document format: [resource-v13(5) YAML](../manpages/man5/resource-yaml-v13.html).
+:    リソース YAML ドキュメントフォーマットをサポートしています: [resource-v13(5) YAML](../manpages/man5/resource-yaml-v13.html)
 
-    Supported MIME types:
+    サポートされている MIME types:
 
     * Generator: "text/yaml", "text/x-yaml", "application/yaml", "application/x-yaml"
     * Parser: "\*/yaml", "\*/x-yaml"
 
-    Supported File extensions:
+    サポートされているファイルエクステンション:
 
     * ".yml", ".yaml"
 
-## Pre-installed plugins
+## プリインストール
 
-Rundeck comes with two pre-installed plugins that may be useful, and also serve
-as examples of plugin development and usage.
+Rundeck には便利な 2 つのプリインストールプラグインが入っており、プラグイン開発およびプラグインの使い方の例としても役立ちます。
 
 ### script-plugin
+The `scirpt-plugin` は以下のプロバイダを含んでいます:
 
-The `script-plugin` includes these providers:
+*   NodeExecutor サービス向け `script-exec` プロバイダ
+*   FileCopier サービス向け `script-copy` プロバイダ
 
-* `script-exec` for the NodeExecutor service
-* `script-copy` for the FileCopier service
+（これらを利用可能にするために [Using Providers](plugins.html#using-providers) を参照してくだい）
 
-(Refer to [Using Providers](plugins.html#using-providers) to enable them.)
+このプラグインはあるコマンドやローカルまたはリモートのスクリプトのファイルコピーとして実行させたい外部スクリプトやコマンドの指定を可能にします。
 
-This plugin provides the ability to specify an external script or command
-to perform a remote or local execution of a Rundeck command, and remote or local file copies.
+この script プラグインによりビルトインの SSH ベースのリモート実行メカニズムや SCP ベースのファイルコピーメカニズムを置き換える事により、外部のどんなメカニズムでも利用可能になります。
 
-It can be a replacement for the built-in SSH-based remote execution and SCP-based file-copy mechanism to
-allow you to user whatever external mechanism you wish.
+ノート: この plugin は [スクリプトプラグインの開発](../developer/plugin-development.html#script-plugin-development) に似た機能を提供します。あなたが書いたスクリプトをテストするためにこのプラグインを使いたい、また後々スクリプトをスタンドアロンプラグインとしてパッケージングしたいと思うかもしれまぜん。
 
-Note: this plugin offers similar functionality to the 
-[Script Plugin Development](../developer/plugin-development.html#script-plugin-development) 
- model.  You may want to use this plugin to test your scripts, and
-then later package them into a standalone plugin using that model.  
+#### script-exec を設定する
 
-#### Configuring script-exec
+プラグインを設定するには、実行したいコマンドラインの文字列を指定する必要があります。オプションでそのコマンドラインを実行する作業ディレクトリとコマンドを発行させるシェルを指定する事もできます。
 
-To configure the plugin you must specify a commandline string to execute.  Optionally
-you may specify a directory to be used as the working directory when executing
-the commandline string, and a shell to invoke the command.
+プラグインの設定は特定の設定値を用い、全プロジェクトに（フレームワークワイド）、1 つのプロジェクトに（プロジェクトワイド）または特定のノードに対して設定できます。
 
-You can configure these across all projects (framework-wide), a single project 
-(project-wide), or specifically for each node, with the most specific configuration
-value taking precedence.
+#### script-exec 向けコマンドを設定する
 
-#### Configuring the command for script-exec
-
-For Framework and Project-wide, configure a property in either the framework.properties or 
-project.properties files:
+フレームワークワイド、プロジェクトワイドにて framework.properties または project.properties ファイルのいずれかの設定を行います。
 
 `plugin.script-exec.default.command`
 
-:   Specifies the default system command to run
+:   実行したいデフォルトのシステムコマンドを指定します。
 
-For node-specific add an attribute named `script-exec` to the node.
+特定にノードに対して設定する場合はノードに `script-exec` という名前のアトリビュートを追加します。
 
 `script-exec`
 
-:   Specifies the system command to run
+:   実行したいデフォルトのシステムコマンドを指定します。
 
-See [Defining the script-exec command](plugins.html#defining-the-script-exec-command) for
-what to specify for this property.
+このプロパティに対する指定項目については[script-exec コマンドを定義する](plugins.html#defining-the-script-exec-command)を参照してください。
 
 #### Configuring the working directory
 
