@@ -116,11 +116,9 @@ Node Executor と File Copier という 2 つの*ノードサービス*は共に
 
 #### ノードの指定
 
-あるノードに対してプロバイダを有効にするには、そのノードの定義にある属性を追加します。
+あるノードに対してプロバイダを有効にするには、そのノードの定義にあるアトリビュートを追加します。
 
-To enable a provider for a node, add an attribute to the node definition.
-
-*Node Executor プロバイダ属性*:
+*Node Executor プロバイダアトリビュート*:
 
 `node-executor`
 
@@ -130,7 +128,7 @@ To enable a provider for a node, add an attribute to the node definition.
 
 :    ローカル（Rundeck サーバー）ノードに対してプロバイダ名を指定します。
 
-ファイルコピープロバイダ属性:
+ファイルコピープロバイダアトリビュート:
 
 `file-copier`
 
@@ -356,9 +354,9 @@ SSH 経由で接続するための username は、ノードアトリビュート
 
 ビルトイン SSH コネクターにより秘密鍵を数種類の方法でできます。ノード毎、プロジェクト毎、Rundeck インスタンスごとにその方法を変えられます。
 
-リモートノードに接続する時に、Rundeck は秘密鍵ファイルの場所を示したあるプロパティ/attribute を探します。その際、以下の順番で最初にヒットするまで探します:
+リモートノードに接続する時に、Rundeck は秘密鍵ファイルの場所を示したあるプロパティ/アトリビュート を探します。その際、以下の順番で最初にヒットするまで探します:
 
-1. **Node レベル**: ノード上の `ssh-keypath` attribute 。ターゲットノードにだけ適用します。
+1. **Node レベル**: ノード上の `ssh-keypath` アトリビュート 。ターゲットノードにだけ適用します。
 2. **Project レベル**: `project.properties` 内の `project.ssh-keypath` プロパティ。 デフォルトでプロジェクト配下の全ノードに適用します。
 3. **Rundeck レベル**: `framework.properties` 内の `framework.ssh-keypath` プロパティ. デフォルトで全プロジェクトに適用します。
 4. **Rundeck レベル**:  `framework.properties` 内の `framework.ssh.keypath` プロパティ。デフォルトで全プロジェクトに適用します。（1.3 より前の Rundeck にも互換性があります）（デフォルトの値は、`~/.ssh/id_rsa`）
@@ -385,7 +383,7 @@ SSH 秘密鍵認証を利用可能にするために、まず `ssh-authenticatio
 
 今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、ノードの設定でデフォルト値として使われている `sshKeyPassphrase` を使うのが一番簡単です。
 
-もしオプション名が `sshKeyPassphrase` で無い場合は、以下の attribute がセットされているか確かめてください:
+もしオプション名が `sshKeyPassphrase` で無い場合は、以下のアトリビュートがセットされているか確かめてください:
 
 *   `ssh-key-passphrase-option` = "`option.NAME`" `NAME` 部分にジョブのセキュアオプションの名前が入ります。
 
@@ -436,7 +434,7 @@ SSH 秘密鍵認証を利用可能にするために、まず `ssh-authenticatio
 
 今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、ノードの設定でデフォルト値として使われている `sshKeyPassphrase` を使うのが一番簡単です。
 
-もしオプション名が `sshKeyPassword` で無い場合は、以下の attribute が各ノードにセットされているか確かめてください:
+もしオプション名が `sshKeyPassword` で無い場合は、以下のアトリビュートが各ノードにセットされているか確かめてください:
 
 *   `ssh-password-option` = "`option.NAME`" : `NAME` 部分にジョブのセキュアオプションの名前が入ります。
 
@@ -515,7 +513,7 @@ SSH パスワード認証を利用可能にするために、まず `ssh-authent
 
 今度はジョブの設定を行います。オプションの定義 `secureInput` に `true` をセットします。このオプション名（ここでいう `secureInput`）は自由に決めて構いませんが、ノードの設定でデフォルト値として使われている `sudoPassword` を使うのが一番簡単です。
 
-もしオプション名が `sudoPassword` で無い場合は、以下の attribute がセットされているか確かめてください:
+もしオプション名が `sudoPassword` で無い場合は、以下のアトリビュートがセットされているか確かめてください:
 
 *   `sudo-password-option` = "`option.NAME`" : `NAME` 部分にジョブのセキュアオプションの名前が入ります。
 
