@@ -742,19 +742,19 @@ The `scirpt-plugin` は以下のプロバイダを含んでいます:
 
 #### script-exec を設定する
 
-プラグインを設定するには、実行したいコマンドラインの文字列を指定する必要があります。オプションでそのコマンドラインを実行する作業ディレクトリとコマンドを発行させるシェルを指定する事もできます。
+このプラグインの設定を行うには、実行したいコマンドラインの文字列を指定する必要があります。オプションでそのコマンドラインを実行する作業ディレクトリとコマンドを発行させるシェルを指定する事もできます。
 
 プラグインの設定は特定の設定値を用い、全プロジェクトに（フレームワークワイド）、1 つのプロジェクトに（プロジェクトワイド）または特定のノードに対して設定できます。
 
 #### script-exec 向けコマンドを設定する
 
-フレームワークワイド、プロジェクトワイドにて framework.properties または project.properties ファイルのいずれかの設定を行います。
+フレームワークワイド、プロジェクトワイドにて framework.properties または project.properties ファイルのいずれかの設定を行います:
 
 `plugin.script-exec.default.command`
 
 :   実行したいデフォルトのシステムコマンドを指定します。
 
-特定にノードに対して設定する場合はノードに `script-exec` という名前のアトリビュートを追加します。
+特定ノードに対して設定する場合は `script-exec` という名前のアトリビュートをノードのリソース定義に追加します。
 
 `script-exec`
 
@@ -762,120 +762,109 @@ The `scirpt-plugin` は以下のプロバイダを含んでいます:
 
 このプロパティに対する指定項目については[script-exec コマンドを定義する](plugins.html#defining-the-script-exec-command)を参照してください。
 
-#### Configuring the working directory
+#### 作業ディレクトリを設定する
 
-For Framework and Project-wide, configure a property in either the framework.properties or 
-project.properties files:
+フレームワークワイド、プロジェクトワイドにて framework.properties または project.properties ファイルのいずれかの設定を行います:
 
 `plugin.script-exec.default.dir`
 
-:   Specifies the default working directory for the execution
+:   実行時に利用するデフォルトの作業ディレクトリを指定します。
 
-For node-specific add an attribute named `script-exec-dir` to the node.
+特定ノードに対して設定する場合は `script-exec-dir` という名前のアトリビュートをノードのリソース定義に追加します。
 
 `script-exec-dir`
 
-:   Specifies the default working directory for the execution (optional)
+:   実行時に利用するデフォルトの作業ディレクトリを指定します（オプション）
 
-#### Configuring the shell
+#### 実行シェルを設定する
 
-For Framework and Project-wide, configure a property in either the framework.properties or 
-project.properties files:
+フレームワークワイド、プロジェクトワイドにて framework.properties または project.properties ファイルのいずれかの設定を行います:
 
 `plugin.script-exec.default.shell`
 
-:   Specifies the shell to use to interpret the command, e.g. "bash -c" or "cmd.exe /c"
+:   コマンドをインタプリタさせるのに利用したいシェルを指定します。例. "bash -c" or "cmd.exe /c"
 
-For node-specific add an attribute named `script-exec-shell` to the node.
+特定ノードに対して設定する場合は `script-exec-shell` というアトリビュートをノードのリソース定義に追加します。
 
 `script-exec-shell`
 
-:   Specifies the shell to use to interpret the command, e.g. "bash -c" or "cmd.exe /c" (optional)
+:   コマンドをインタプリタさせるのに利用したいシェルを指定します。例. "bash -c" or "cmd.exe /c" （オプション）
 
-#### Defining the script-exec command
+#### script-exec コマンドを定義する
 
-The value of this property or attribute should be the complete commandline 
-string to execute in an external system process.
+このプロパティやアトリビュートの値は外部システムプロセス内で実行したい正確なコマンドライン文字列であるはずです。
 
-You can use *Data context properties* as you can in normal Rundeck command 
-execution, such as `${node.name}` or `${job.name}`. 
+`${node.name` または `${job.name}` のように記述することで、Rundeck の一般的なコマンド実行として *データコンテキストプロパティ* を利用できます。
 
-In addition, the plugin provides these new data context properties:
+さらに、このプラグインは新しいデータコンテキストプロパティを提供します:
 
 `exec.command`
 
-:   The command that the workflow/user has specified to run on the node
+:   ワークフロー / ユーザーが指定されている実行したいコマンド
 
 `exec.dir`
 
-:   The working directory path if it is configured for the node or in a properties file
+:   プロパティファイルまたはノード定義に設定されている場合の作業ディレクトリのパス
 
-Example:
+例:
 
-If you wanted to run some external remote connection command ("/bin/execremote") in lieu of the 
-built-in ssh command, you could specify these attributes for node:
+ビルトイン SSH コマンドが存在する所で、それ他いくつかの外部のリモート接続コマンド ("/bin/execremote") を実行したい場合、以下のアトリビュートを指定できます:
 
     mynode:
         node-executor: script-exec
         script-exec: /bin/execremote -host ${node.hostname} -user ${node.username} -- ${exec.command}
 
-If the command you want to run requires special handling (such as quoting or other interpretation) you may want to have a shell execute it. In which case you could specify the shell to use:
+そのコマンドが特別なハンドリング（クオートや他の値の展開方法）を必要とする場合、シェルを使いたいと思うかもしれない。このケースではシェルを使うという指定ができます。
 
     mynode:
         node-executor: script-exec
         script-exec-shell: bash -c
         script-exec: ssh -o "some quoted option" ${node.username}@${node.hostname} ${exec.command}
 
-At run time, the properties specified would be expanded to the values for the
-specific node and command string to execute.
+実行時、指定されたプロパティは実行するコマンド文字列や特定ノード用の値が展開されます。
 
-OR, you could specify a default to apply to all nodes within the project.properties 
-file located at `$RDECK_BASE/projects/NAME/etc/project.properties`.
+または `$RDECK_BASE/projects/NAME/etc/project.properties` に置かれた project.properties ファイル内にて、全てのノードに対してデフォルト設定を行うことも可能です。
 
     script-exec.default.command= /bin/execremote -host ${node.hostname} \
         -user ${node.username} -- ${exec.command}
 
-Similarly for the `$RDECK_BASE/etc/framework.properties` file to apply to all
-projects.
+同様に `$RDECK_BASE/etc/framework.properties` ファイルにて全プロジェクトに対しての設定ができます。
 
 #### Requirements for the script-exec command
+#### script-exec コマンド向けの必要事項
 
-The command run by by the script plugin is expected to behave in the following manner:
+script plugin を使ったコマンドの実行では以下のマナーが守られていることが期待されます:
 
-* Exit with a system exit code of "0" in case of success.
-* Any other exit code indicates failure
+*   実行が成功した場合にはシステム終了コードが "0" で終わる
+*   その他全ての終了コードは失敗を意味する
 
-Note: all output from STDOUT and STDERR will be captured as part of the Rundeck job execution.
+ノート: STDOUT と STDERR からの全出力は Rundeck のジョブ実行の一部としてキャプチャされます
 
-#### Configuring script-copy
+#### script-copy の設定をする
 
-To configure script-copy you must specify a commandline string to execute.  Optionally
-you may specify a directory to be used as the working directory when executing
-the commandline string, and a shell to use to interpret the command.  
+script-copy の設定を行うには、実行したいコマンドラインの文字列を指定する必要があります。オプションでそのコマンドラインを実行する作業ディレクトリとコマンドを発行させるシェルを指定する事もできます。
 
-You must also specify the filepath on the target node where the copied file will be placed, which can be done in two different ways.
+プラグインの設定は特定の設定値を用い、全プロジェクトに（フレームワークワイド）、1 つのプロジェクトに（プロジェクトワイド）または特定のノードに対して設定できます。
 
-You can configure these across all projects (framework-wide), a single project
-(project-wide), or specifically for each node, with the most specific configuration
-value taking precedence.
+ターゲットノード上のどこにファイルを置きたいかのファイルパスを設定する必要があります。これには 2 種類の方法があります。
 
-#### Configuring the command for script-copy
+プラグインの設定は特定の設定値を用い、全プロジェクトに（フレームワークワイド）、1 つのプロジェクトに（プロジェクトワイド）または特定のノードに対して設定できます。
 
-For Framework and Project-wide, configure these properties in either the framework.properties or
-project.properties files:
+#### script-copy 向けコマンドの設定をする
+
+フレームワークワイド、プロジェクトワイドにて framework.properties または project.properties ファイルのいずれかの設定を行います:
 
 `plugin.script-copy.default.command`
 
-:   Specifies the default system command to run
+:   実行時に利用するデフォルトのシステムコマンドを指定します。
 
-For node-specific add these attributes to the node.
+特定ノードに対して設定する場合はこれらのアトリビュートをノードのリソース定義に追加します。
 
 `script-copy`
 
-:   Specifies the system command to run
+:   実行時に利用するシステムコマンドを指定します。
 
-See [Defining the script-copy command](plugins.html#defining-the-script-copy-command) for
-what to specify for this property.
+このプロパティに対する指定項目については[script-copy コマンドを定義する](plugins.html#defining-the-script-copy-command)を参照してください。
 
 #### Configuring the working directory
 
