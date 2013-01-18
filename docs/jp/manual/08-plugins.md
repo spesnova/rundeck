@@ -866,164 +866,151 @@ script-copy の設定を行うには、実行したいコマンドラインの�
 
 このプロパティに対する指定項目については[script-copy コマンドを定義する](plugins.html#defining-the-script-copy-command)を参照してください。
 
-#### Configuring the working directory
+#### ワーキングディレクトリの設定
 
-For Framework and Project-wide, configure a property in either the framework.properties or
-project.properties files:
+フレームワークとプロジェクト内設定のためには、 framework.properties や project.properties ファイルを設定します。
 
 `plugin.script-copy.default.dir`
 
-:   Specifies the default working directory for the execution
+:   実行時のデフォルトワーキングディレクトリを指定します。
 
 
-For node-specific add an attribute named `script-copy-dir` to the node.
+ノード依存の場合は、 `script-copy-dir` 属性をノードに追加します。
 
 `script-copy-dir`
 
-:   Specifies the default working directory for the execution (optional)
+:   実行時のデフォルトワーキングディレクトリを指定します（オプション）
 
-#### Configuring the shell
+#### シェルの設定
 
-For Framework and Project-wide, configure a property in either the framework.properties or
-project.properties files:
+フレームワークとプロジェクト内設定のためには、 framework.properties や project.properties ファイルを設定します。
 
 `plugin.script-copy.default.shell`
 
-:   Specifies the shell to run the command (optional)
+:   コマンドを実行するシェルを指定します。（オプション）
 
-For node-specific add an attribute named `script-copy-shell` to the node.
+ノード依存の場合は、 `script-copy-shell` 属性をノードに追加します。
 
 `script-copy-shell`
 
-:   Specifies the shell to run the command (optional)
+:   コマンドを実行するシェルを指定します。（オプション）
 
-#### Configuring the remote filepath
+#### リモートファイルパスの設定
 
-For Framework and Project-wide, configure a property in either the framework.properties or
-project.properties files:
+フレームワークとプロジェクト内設定のためには、 framework.properties や project.properties ファイルを設定します。
 
 `plugin.script-copy.default.remote-filepath`
 
-:   Specifies the full path of the copied file.
+:   コピーされるファイルのフルパスを指定します。
 
+ノード依存の場合は、 `script-copy-remote-filepath` 属性をノードに追加します。
 For node-specific add an attribute named `script-copy-remote-filepath` to the node.
 
 `script-copy-remote-filepath`
 
-:   Specifies the full path of the copied file.
+:   コピーされるファイルのフルパスを指定します。
 
-See [Defining the script-copy filepath](plugins.html#defining-the-script-copy-filepath) for
-what to specify for this property.
+プロパティの詳細は [script-copy ファイルパスの定義](plugins.html#script-copy ファイルパスの定義) を参照してください。
 
-#### Defining the script-copy command
+#### script-copy コマンドの定義
 
-The value of this property or attribute should be the complete commandline
-string to execute in an external system process.
+このプロパティもしくは属性の値は、外部システムのプロセスで実行するコマンドライン文字列でなければなりません。
 
-You can use *Data context properties* as you can in normal Rundeck command
-execution, such as `${node.name}` or `${job.name}`.
+通常の Rundeck のコマンド実行で利用できる `${node.name}` や `${job.name}` などのような *データコンテキストプロパティ* を利用できます。
 
-In addition, the plugin provides these new data context properties:
+加えて、このプラグインは新たなデータコンテキストプロパティを提供します:
 
 `file-copy.file`
 
-:   The local filepath that should be copied to the remote node
+:   リモートノードにコピーするローカルファイルのパス
 
 `file-copy.filename`
 
-:   The name of the file without any path information.
+:   パス情報を含まないファイル名
 
-Example:
+例:
 
-If you wanted to run some external remote connection command ("/bin/copyremote") in lieu of the
-built-in SCP command, you could specify these attributes for node:
+標準の SCP コマンドの代わりに外部リモート接続コマンド ("/bin/copyremote") を利用したいとき、ノードごとに以下の属性を指定できます。
 
     mynode:
         file-copier: script-copy
         script-copy: /bin/copyremote -host ${node.hostname} -user ${node.username} -- ${file-copy.file} ${node.destdir}
 
-At run time, the properties specified would be expanded to the values for the
-specific node and command string to execute.
+実行時、このプロパティは指定したノード用の値に展開され、実行用のコマンド文字列になります。
 
-OR, you could specify a default to apply to all nodes within the project.properties
-file located at `$RDECK_BASE/projects/NAME/etc/project.properties`.
+もしくは、全てのノードに適用されるデフォルト値を `$RDECK_BASE/projects/NAME/etc/project.properties` にある project.properties ファイル内に定義することおｍできます。
 
     script-copy.default.command= /bin/copyremote -host ${node.hostname} -user ${node.username} -- ${file-copy.file} ${node.destdir}
 
-Similarly for the `$RDECK_BASE/etc/framework.properties` file to apply to all
+同様に全てのプロジェクトに適用するために `$RDECK_BASE/etc/framework.properties` ファイルを利用できます。
 projects.
 
-#### Defining the script-copy filepath
+#### script-copy ファイルパスの定義
 
-The value of this property or attribute should be the complete filepath on
-the target node where the copied file is placed. This is to tell the FileCopier service where the remote file exists after your script copies it over, so that it
-can later be executed.
+このプロパティもしくは属性の値は、対象のノード上にあるファイルのフルパスでなければなりません。
+スクリプトがコピーしたファイルを後から実行できるので、それを FileCopier サービスに伝えるためのものです。
 
-You can do this in *two* ways, either as a configuration property as described here, or via output from your script, as described under [Requirements of script-copy command](plugins.html#requirements-of-script-copy-command).
+これは *2つ* の方法で実現できます。ここに記載するように設定プロパティとするか、以下に記載する [script-copy コマンドの要件](plugins.html#script-copy コマンドの要件) のようにスクリプトからの出力を通じるかです。
 
-You can use *Data context properties* as you can in normal Rundeck command
-execution, such as `${node.name}` or `${job.name}`.
+通常の Rundeck のコマンド実行で利用できる `${node.name}` や `${job.name}` などのような *データコンテキストプロパティ* を利用できます。
 
-In addition, the plugin provides these new data context properties:
+くわえて、プラグインは新たなデータコンテキストプロパティを提供します:
 
 `file-copy.file`
 
-:   The local filepath that should be copied to the remote node
+:   リモートノードにコピーされる必要のあるローカルファイルパス
 
 `file-copy.filename`
 
-:   The name of the file without any path information.
+:   パス情報を含まないファイル名
 
-Example:
+例:
 
-Using the "/bin/copyremote" example from above, we need to set the `script-copy-remote-filepath` to the location on the remote node where the file is copied.  Our example copies `${file-copy.file}` to the location `${node.destdir}`.  This is an attribute on the Node that we assume to be configured with a directory path.
+上記から "/bin/copyremote" を例にします。リモートノードのどこにファイルをコピーするかきめるため、`script-copy-remote-filepath` を設定する必要があります。この例では `${file-copy.file}` を `${node.destdir}` にコピーします。ノード上のこの属性にディレクトリパスを設定したと仮定します。
 
-We need to set the `script-copy-remote-filepath` to the location on the remote node where
-the file will exist after being copied.  We know the filename of the file is available as `${file-copy.filename}`,  so we set it to `${node.destdir}/${file-copy.filename}`:
+`script-copy-remote-filepath` にファイルがコピーされた後のリモートノード上の場所を設定する必要があります。
+ファイル名は `${file-copy.filename}` が利用可能なので、`${node.destdir}/${file-copy.filename}` とセットします:
 
     mynode:
         file-copier: script-copy
         script-copy: /bin/copyremote -host ${node.hostname} -user ${node.username} -- ${file-copy.file} ${node.destdir}
         script-copy-remote-filepath: ${node.destdir}/${file-copy.filename}
 
-At run time, the properties specified would be expanded to the values for the
-specific node and command string to execute.
+実行時、このプロパティは指定したノード用の値に展開され、実行用のコマンド文字列になります。
 
-OR, you could specify a default to apply to all nodes within the project.properties
-file located at `$RDECK_BASE/projects/NAME/etc/project.properties`.
+もしくは、全てのノードに適用されるデフォルト値を `$RDECK_BASE/projects/NAME/etc/project.properties` にある project.properties ファイル内に定義することおｍできます。
 
     script-copy.default.remote-filepath= ${node.destdir}/${file-copy.filename}
 
-Similarly for the `$RDECK_BASE/etc/framework.properties` file to apply to all
-projects.
+同様に全てのプロジェクトに適用するために `$RDECK_BASE/etc/framework.properties` ファイルを利用できます。
 
-#### Requirements of script-copy command
+#### script-copy コマンドの要件
 
-The command executed by script-copy is expected to behave in the following manner:
+script-copy によって実行されるコマンドは以下のマナーに沿うことを求められます。
 
-* Exit with an exit code of "0" to indicate success
-* Exit with any other exit code indicates failure
-* **Either**
-    * Output the filepath of the copied file on the target node as the first line of output on STDOUT
-    OR
-    * Define the "remote-filepath" as described above
+* 問題なく成功したときは終了コード "0" を返すこと
+* 失敗したときはそれ以外の終了コードを返すこと
+* **同義**
+    * ターゲットノード上にコピーされたファイルのパス出力を STDOUT の1行目に出すこと
+    もしくは
+    * 上記を "remote-filepath" として定義すること
 
-#### Example Scripts
+#### スクリプト例
 
-Here are some example scripts to show the some possible usage patterns.
+利用パターンの参考になるスクリプトの例をいくつか載せます。
 
-**Example script-exec**:
+**script-exec**:
 
-Node definition:
+ノード定義:
 
     mynode:
         node-executor: script-exec
 
-Project config `project.properties` file:
+プロジェクト設定ファイル `project.properties`:
 
     plugin.script-exec.default.command: /tmp/myexec.sh ${node.hostname} ${node.username} -- ${exec.command}
 
-Contents of `/tmp/myexec.sh`:
+`/tmp/myexec.sh` の内容:
 
     #!/bin/bash
 
@@ -1039,19 +1026,19 @@ Contents of `/tmp/myexec.sh`:
 
     exec $REMOTECMD $user@$host $command
 
-**Example script-copy**:
+**script-copy**:
 
-Node definition:
+ノード定義:
 
     mynode:
         file-copier: script-copy
         destdir: /some/node/dir
 
-System-wide config in `framework.properties`:
+`framework.properties` 内のシステムワイド設定:
 
     plugin.script-copy.default.command: /tmp/mycopy.sh ${node.hostname} ${node.username} ${node.destdir} ${file-copy.file}
 
-Contents of `/tmp/mycopy.sh`:
+`/tmp/mycopy.sh` の内容:
 
     #!/bin/bash
 
@@ -1074,10 +1061,10 @@ Contents of `/tmp/mycopy.sh`:
 
     echo "$dir/$name"
 
-**Example system ssh replacement**:
+**ssh リプレースシステム**:
 
-This example uses the system's "ssh" and "scp" commands to perform node execution 
-and file copying, and doesn't make use of an external script file:
+この例ではシステムの "ssh" と "scp" コマンドをノード実行とファイルのコピーに使っています。
+また、外部スクリプトファイルは使用しません:
 
 Node-only configuration:
 
@@ -1093,7 +1080,7 @@ Node-only configuration:
         script-copy: scp ${file-copy.file} ${node.username}@${node.hostname}:${node.destdir}
         script-copy-remote-filepath: ${node.destdir}/${file-copy.filename}
 
-This could all be set as defaults in the project.properties file, such as:
+デフォルト値は全て以下のような project.properties ファイル内のものがセットされます:
 
     # set default node executor
     service.NodeExecutor.default.provider=script-exec
@@ -1110,44 +1097,41 @@ This could all be set as defaults in the project.properties file, such as:
     plugin.script-copy.default.shell: bash -c
     plugin.script-copy.default.remote-filepath: ${node.destdir}/${file-copy.filename}
 
-In which case your node definitions could be as simple as:
+このケースではノード定義は単純です:
 
     mynode:
         hostname: mynode
         username: user1
         destdir: /tmp
 
-### stub-plugin
+### スタブプラグイン
 
-The `stub-plugin` includes these providers:
+`スタブプラグイン` は以下のプロパイダを含んでいます:
 
-* `stub` for the NodeExecutor service
-* `stub` for the FileCopier service
+* NodeExecutor サービスの`スタブ`
+* FileCopier サービスの`スタブ`
 
-(Refer to [Using Providers](plugins.html#using-providers) to enable them.)
+(これらを有効にするには [プロパイダの利用](plugins.html#プロパイダの利用) を参考にして下さい)
 
-This plugin does not actually perform any remote file copy or command execution,
-instead it simply echoes the command that was supposed to be executed, and
-pretends to have copied a file. 
+このプラグインはリモートファイルのコピーやコマンド実行を実際に行うわけではありません。
+コマンドが実行されたかのように単純なエコーを返したり、ファイルがコピーされたように振る舞います。
 
-This is intended for use in testing new Nodes, Jobs or Workflow sequences without
-affecting any actual runtime environment.  
+これは新しいノードやジョブ、ワークフローシーケンスを実際の実行環境に影響を与えずにテストしたい時に利用することを想定しています。
 
-You can also test some failure scenarios by configuring the following node attributes:
+また、以下のノード属性を設定して障害シナリオをテストすることもできます。
 
 `stub-exec-success`="true/false"
 
-:   If set to false, the stub command execution will simulate command failure
+:   false にセットした場合、スタブコマンドの実行は失敗としてシミュレートされます
 
 `stub-result-code`
 
-:   Simulate the return result code from execution
+:   実行結果の戻り値をシミュレートします
 
-You could, for example, disable or test an entire project's workflows or jobs by
-simply setting the `project.properties` node executor provider to `stub`.
+たとえば、単に `project.properties`　ノード executor プロバイダを `stub` に設定するだけでプロジェクトのワークフローやジョブを一通りテストしたり無効化することができます。
 
-## Plugin Development
+## プラグイン開発
 
-Plugins can be developed easily using scripts, or you can use Java.
+プラグインはスクリプトを使ってカンタンに開発できます。Java も利用可能です。
 
-See more information in the [Developer Guide - Plugin Development](../developer/plugin-development.html) chapter.
+詳細については [デベロッパーガイド - プラグイン開発](../developer/plugin-development.html) を参照して下さい。
