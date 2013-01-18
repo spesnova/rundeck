@@ -892,36 +892,34 @@ For node-specific add these attributes to the node.
 See [Defining the script-copy command](plugins.html#defining-the-script-copy-command) for
 what to specify for this property.
 
-#### Configuring the working directory
+#### ワーキングディレクトリの設定
 
-For Framework and Project-wide, configure a property in either the framework.properties or
-project.properties files:
+フレームワークとプロジェクト内設定のためには、 framework.properties や project.properties ファイルを設定します。
 
 `plugin.script-copy.default.dir`
 
-:   Specifies the default working directory for the execution
+:   実行時のデフォルトワーキングディレクトリを指定します。
 
 
-For node-specific add an attribute named `script-copy-dir` to the node.
+ノード依存の場合は、 `script-copy-dir` 属性をノードに追加します。
 
 `script-copy-dir`
 
-:   Specifies the default working directory for the execution (optional)
+:   実行時のデフォルトワーキングディレクトリを指定します（オプション）
 
-#### Configuring the shell
+#### シェルの設定
 
-For Framework and Project-wide, configure a property in either the framework.properties or
-project.properties files:
+フレームワークとプロジェクト内設定のためには、 framework.properties や project.properties ファイルを設定します。
 
 `plugin.script-copy.default.shell`
 
-:   Specifies the shell to run the command (optional)
+:   コマンドを実行するシェルを指定します。（オプション）
 
-For node-specific add an attribute named `script-copy-shell` to the node.
+ノード依存の場合は、 `script-copy-shell` 属性をノードに追加します。
 
 `script-copy-shell`
 
-:   Specifies the shell to run the command (optional)
+:   コマンドを実行するシェルを指定します。（オプション）
 
 #### リモートファイルパスの設定
 
@@ -929,14 +927,14 @@ For node-specific add an attribute named `script-copy-shell` to the node.
 
 `plugin.script-copy.default.remote-filepath`
 
-:   コピーされるファイルのフルパスを定義します。
+:   コピーされるファイルのフルパスを指定します。
 
 ノード依存の場合は、 `script-copy-remote-filepath` 属性をノードに追加します。
 For node-specific add an attribute named `script-copy-remote-filepath` to the node.
 
 `script-copy-remote-filepath`
 
-:   コピーされるファイルのフルパスを定義します。
+:   コピーされるファイルのフルパスを指定します。
 
 プロパティの詳細は [script-copy ファイルパスの定義](plugins.html#script-copy ファイルパスの定義) を参照してください。
 
