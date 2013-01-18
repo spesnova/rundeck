@@ -304,7 +304,6 @@ SSH プロバイダは、補助的に Sudo パスワード認証もサポート�
 ##### SCP File Copier の設定
 
 一般的な SSH 設定の記述に加えて、いくつか SCP 用に追加設定があります。
-In addition to the general SSH configuration mentioned for in this section, some additional configuration can be done for SCP. 
 
 あるリモートノード上であるスクリプトが実行されたとき、まず SCP 経由でスクリプトファイルをコピーし、それから実行します。SSH コネクションプロパティに加えて SCP 用に以下のようなノードアトリビュートを設定できます。
 
@@ -331,7 +330,6 @@ SSH 認証は パスワードまたは公開鍵/秘密鍵認証の 2 つの方�
 これらの値が一切セットされてない場合はデフォルトで公開鍵/秘密鍵認証方式が使われます。
 
 ##### SSH username 
-の設定
 
 SSH 経由で接続するための username は、ノードアトリビュート `username` から取得します:
 
@@ -600,7 +598,7 @@ Rundeck は以下に示すビルトインプロバイダをコアに持ってい
 `format`                      フォーマット名                  明示的にフォーマットを宣言することができます。利用できるフォーマットは `file` エクステンションのものに限ります。
 `requireFileExists`           true/false                      値が true かつファイルが存在しないとき、ノードの読み込みは失敗となります。（デフォルト: false ）
 `includeServerNode`           true/false                      値が true ならば Rundeck サーバーのノードを自動的に含めます（デフォルト: false ）
-`generateFileAutomatically`   true/false                      If true, create the file automatically if it is missing. (Default: false)
+`generateFileAutomatically`   true/false                      値が true ならば ファイルが存在しないとき、ファイルを自動で作成します。（デフォルト: false）
 ----------------------------
 
 Table: `file` リソースモデルソースプロバイダのプロパティの設定
@@ -616,7 +614,6 @@ Table: `file` リソースモデルソースプロバイダのプロパティの
     resources.source.1.includeServerNode=true
     resources.source.1.generateFileAutomatically=true
 
-#### URL Resource Model Source Configuration
 #### URL リソースモデルソース設定
 
 `url` リソースモデルソースプロバイダは HTTP GET リクエストでノードの定義を取得します。
@@ -625,9 +622,9 @@ Table: `file` リソースモデルソースプロバイダのプロパティの
 
 Name      Value       Notes
 -----     ------      ------
-`url`     URL         A valid URL, either `http:`, `https:` or `file:` protocol.
-`cache`   true/false  If true, use ETag/Last-Modified information from the server to only download new content if it has changed. If false, always download the content. (Default: true)
-`timeout` seconds     Number of seconds before request fails due to timeout. `0` means no timeout. (Default: 30) 
+`url`     URL         `http:` または `https:` または `file:` プロトコルの正しい URL を記述します。
+`cache`   true/false  値が true ならばサーバーからの ETag/Last-Modified 情報を用い、変更があったときのみ新しいコンテンツをダウンロードします。false の場合は常にダウンロードしてきます。（デフォルト: true）
+`timeout` 秒          リクエストをタイムアウトによる失敗とするまでの秒を指定します。`0` とするとタイムアウトは無しとなります。（デフォルト: 30）
 ----------------------------
 
 table: リソースモデルソースプロバイダ `url` 用の設定プロパティ。
@@ -659,16 +656,14 @@ table: `directory` リソースモデルソースプロバイダ用の設定プ�
     
 #### スクリプトリソースモデルソース設定
 
-The `script` Resource Model Source provider executes a script file and reads the output of the script as one of the supported [Resource Model Document Formats](rundeck-basics.html#resource-model-document-formats).
-
 `script` リソースモデルソースプロバイダはあるスクリプトファイルを実行します。そしてサポートされている [Resource Model Document Formats](rundeck-basics.html#resource-model-document-formats)の一つとしてその実行結果を読み込みます。
 
 Name             Value                           Notes
 -----            ------                          ------
-`file`           Script file path                If required by the `interpreter`, the file should be executable
-`interpreter`    Command or interpreter to use   e.g. "bash -c"
-`args`           Additional arguments to pass    The arguments will be added after the script file name to the executed commandline
-`format`         Format name                     Must be used to declare the format explicitly.
+`file`           スクリプトファイルパス          `interpreter` が必要とする場合、スクリプトファイルが実行可能であるべきです
+`interpreter`    コマンドまたはインタプリタ      例. "bash -c"
+`args`           渡したい追加の引数              引数は実行されるコマンドライン文字列の後ろに追加されます。
+`format`         フォーマット名                  利用するフォーマットを明記します
 ----------------------------
 
 Table: Configuration properties for `script` Resource Model Source provider
