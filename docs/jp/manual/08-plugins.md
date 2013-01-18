@@ -644,7 +644,7 @@ table: リソースモデルソースプロバイダ `url` 用の設定プロパ
 
 Name                          Value                           Notes
 -----                         ------                          ------
-`directory`                   directory path                  All files in the directory that have a supported file extension will be loaded
+`directory`                   ディレクトリパス                ディレクトリ内のサポートされているファイルエクステンションを持つ全てのファイルが読み込まれます。
 ----------------------------
 
 table: `directory` リソースモデルソースプロバイダ用の設定プロパティ
