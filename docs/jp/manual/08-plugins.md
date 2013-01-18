@@ -102,7 +102,7 @@ Rundeck のコアは、複数ノードに対して様々なワークフロー・
 
 なお、Rundeck のプラグインは 1 つ以上のプロバイダを持つことができます。
 
-## プロバイダを使う
+## プロバイダの利用
 
 ### Node Executor サービス
 
@@ -732,23 +732,23 @@ The `scirpt-plugin` は以下のプロバイダを含んでいます:
 *   NodeExecutor サービス向け `script-exec` プロバイダ
 *   FileCopier サービス向け `script-copy` プロバイダ
 
-（これらを利用可能にするために [Using Providers](plugins.html#using-providers) を参照してくだい）
+（これらを利用可能にするために [Using Providers](plugins.html#プロバイダの利用) を参照してくだい）
 
 このプラグインはあるコマンドやローカルまたはリモートのスクリプトのファイルコピーとして実行させたい外部スクリプトやコマンドの指定を可能にします。
 
 この script プラグインによりビルトインの SSH ベースのリモート実行メカニズムや SCP ベースのファイルコピーメカニズムを置き換える事により、外部のどんなメカニズムでも利用可能になります。
 
-ノート: この plugin は [スクリプトプラグインの開発](../developer/plugin-development.html#script-plugin-development) に似た機能を提供します。あなたが書いたスクリプトをテストするためにこのプラグインを使いたい、また後々スクリプトをスタンドアロンプラグインとしてパッケージングしたいと思うかもしれまぜん。
+ノート: この plugin は [スクリプトプラグインの開発](../developer/plugin-development.html#スクリプトプラグイン開発) に似た機能を提供します。あなたが書いたスクリプトをテストするためにこのプラグインを使いたい、また後々スクリプトをスタンドアロンプラグインとしてパッケージングしたいと思うかもしれまぜん。
 
-#### script-exec を設定する
+#### script-exec の設定
 
 このプラグインの設定を行うには、実行したいコマンドラインの文字列を指定する必要があります。オプションでそのコマンドラインを実行する作業ディレクトリとコマンドを発行させるシェルを指定する事もできます。
 
 プラグインの設定は特定の設定値を用い、全プロジェクトに（フレームワークワイド）、1 つのプロジェクトに（プロジェクトワイド）または特定のノードに対して設定できます。
 
-#### script-exec 向けコマンドを設定する
+#### script-exec のコマンドの設定
 
-フレームワークワイド、プロジェクトワイドにて framework.properties または project.properties ファイルのいずれかの設定を行います:
+フレームワーク全体とプロジェクトごとの設定として framework.properties または project.properties ファイルにそれぞれの設定を行います:
 
 `plugin.script-exec.default.command`
 
@@ -760,9 +760,9 @@ The `scirpt-plugin` は以下のプロバイダを含んでいます:
 
 :   実行したいデフォルトのシステムコマンドを指定します。
 
-このプロパティに対する指定項目については[script-exec コマンドを定義する](plugins.html#defining-the-script-exec-command)を参照してください。
+プロパティの詳細は [script-exec コマンドの定義](plugins.html#script-exec コマンドの定義)を参照してください。
 
-#### 作業ディレクトリを設定する
+#### ワーキングディレクトリの設定
 
 フレームワークワイド、プロジェクトワイドにて framework.properties または project.properties ファイルのいずれかの設定を行います:
 
@@ -776,9 +776,9 @@ The `scirpt-plugin` は以下のプロバイダを含んでいます:
 
 :   実行時に利用するデフォルトの作業ディレクトリを指定します（オプション）
 
-#### 実行シェルを設定する
+#### 実行シェルの設定
 
-フレームワークワイド、プロジェクトワイドにて framework.properties または project.properties ファイルのいずれかの設定を行います:
+フレームワーク全体とプロジェクトごとの設定として framework.properties または project.properties ファイルにそれぞれの設定を行います:
 
 `plugin.script-exec.default.shell`
 
@@ -790,7 +790,7 @@ The `scirpt-plugin` は以下のプロバイダを含んでいます:
 
 :   コマンドをインタプリタさせるのに利用したいシェルを指定します。例. "bash -c" or "cmd.exe /c" （オプション）
 
-#### script-exec コマンドを定義する
+#### script-exec コマンドの定義
 
 このプロパティやアトリビュートの値は外部システムプロセス内で実行したい正確なコマンドライン文字列であるはずです。
 
@@ -830,8 +830,7 @@ The `scirpt-plugin` は以下のプロバイダを含んでいます:
 
 同様に `$RDECK_BASE/etc/framework.properties` ファイルにて全プロジェクトに対しての設定ができます。
 
-#### Requirements for the script-exec command
-#### script-exec コマンド向けの必要事項
+#### script-exec コマンドの要件
 
 script plugin を使ったコマンドの実行では以下のマナーが守られていることが期待されます:
 
@@ -840,7 +839,7 @@ script plugin を使ったコマンドの実行では以下のマナーが守ら
 
 ノート: STDOUT と STDERR からの全出力は Rundeck のジョブ実行の一部としてキャプチャされます
 
-#### script-copy の設定をする
+#### script-copy の設定
 
 script-copy の設定を行うには、実行したいコマンドラインの文字列を指定する必要があります。オプションでそのコマンドラインを実行する作業ディレクトリとコマンドを発行させるシェルを指定する事もできます。
 
@@ -850,9 +849,9 @@ script-copy の設定を行うには、実行したいコマンドラインの�
 
 プラグインの設定は特定の設定値を用い、全プロジェクトに（フレームワークワイド）、1 つのプロジェクトに（プロジェクトワイド）または特定のノードに対して設定できます。
 
-#### script-copy 向けコマンドの設定をする
+#### script-copy のコマンドの設定
 
-フレームワークワイド、プロジェクトワイドにて framework.properties または project.properties ファイルのいずれかの設定を行います:
+フレームワーク全体とプロジェクトごとの設定として framework.properties または project.properties ファイルにそれぞれの設定を行います:
 
 `plugin.script-copy.default.command`
 
@@ -864,32 +863,31 @@ script-copy の設定を行うには、実行したいコマンドラインの�
 
 :   実行時に利用するシステムコマンドを指定します。
 
-このプロパティに対する指定項目については[script-copy コマンドを定義する](plugins.html#defining-the-script-copy-command)を参照してください。
+プロパティの詳細は [script-copy コマンドの定義](plugins.html#script-copy コマンドの定義)を参照してください。
 
 #### ワーキングディレクトリの設定
 
-フレームワークとプロジェクト内設定のためには、 framework.properties や project.properties ファイルを設定します。
+フレームワーク全体とプロジェクトごとの設定として framework.properties または project.properties ファイルにそれぞれの設定を行います:
 
 `plugin.script-copy.default.dir`
 
 :   実行時のデフォルトワーキングディレクトリを指定します。
 
-
-ノード依存の場合は、 `script-copy-dir` 属性をノードに追加します。
+特定ノードに対して設定する場合は `script-copy-dir` アトリビュートをノードのリソース定義に追加します。
 
 `script-copy-dir`
 
 :   実行時のデフォルトワーキングディレクトリを指定します（オプション）
 
-#### シェルの設定
+#### 実行シェルの設定
 
-フレームワークとプロジェクト内設定のためには、 framework.properties や project.properties ファイルを設定します。
+フレームワーク全体とプロジェクトごとの設定として framework.properties または project.properties ファイルにそれぞれの設定を行います:
 
 `plugin.script-copy.default.shell`
 
 :   コマンドを実行するシェルを指定します。（オプション）
 
-ノード依存の場合は、 `script-copy-shell` 属性をノードに追加します。
+特定ノードに対して設定する場合は `script-copy-shell` アトリビュートをノードのリソース定義に追加します。
 
 `script-copy-shell`
 
@@ -897,14 +895,13 @@ script-copy の設定を行うには、実行したいコマンドラインの�
 
 #### リモートファイルパスの設定
 
-フレームワークとプロジェクト内設定のためには、 framework.properties や project.properties ファイルを設定します。
+フレームワーク全体とプロジェクトごとの設定として framework.properties または project.properties ファイルにそれぞれの設定を行います:
 
 `plugin.script-copy.default.remote-filepath`
 
 :   コピーされるファイルのフルパスを指定します。
 
-ノード依存の場合は、 `script-copy-remote-filepath` 属性をノードに追加します。
-For node-specific add an attribute named `script-copy-remote-filepath` to the node.
+特定ノードに対して設定する場合は `script-copy-remote-filepath` アトリビュートをノードのリソース定義に追加します。
 
 `script-copy-remote-filepath`
 
