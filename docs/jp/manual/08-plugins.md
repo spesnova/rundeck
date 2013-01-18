@@ -923,60 +923,54 @@ For node-specific add an attribute named `script-copy-shell` to the node.
 
 :   Specifies the shell to run the command (optional)
 
-#### Configuring the remote filepath
+#### リモートファイルパスの設定
 
-For Framework and Project-wide, configure a property in either the framework.properties or
-project.properties files:
+フレームワークとプロジェクト内設定のためには、 framework.properties や project.properties ファイルを設定します。
 
 `plugin.script-copy.default.remote-filepath`
 
-:   Specifies the full path of the copied file.
+:   コピーされるファイルのフルパスを定義します。
 
+ノード依存の場合は、 `script-copy-remote-filepath` 属性をノードに追加します。
 For node-specific add an attribute named `script-copy-remote-filepath` to the node.
 
 `script-copy-remote-filepath`
 
-:   Specifies the full path of the copied file.
+:   コピーされるファイルのフルパスを定義します。
 
-See [Defining the script-copy filepath](plugins.html#defining-the-script-copy-filepath) for
-what to specify for this property.
+プロパティの詳細は [script-copy ファイルパスの定義](plugins.html#script-copy ファイルパスの定義) を参照してください。
 
-#### Defining the script-copy command
+#### script-copy コマンドの定義
 
-The value of this property or attribute should be the complete commandline
-string to execute in an external system process.
+このプロパティもしくは属性の値は、外部システムのプロセスで実行するコマンドライン文字列でなければなりません。
 
-You can use *Data context properties* as you can in normal Rundeck command
-execution, such as `${node.name}` or `${job.name}`.
+通常の Rundeck のコマンド実行で利用できる `${node.name}` や `${job.name}` などのような *データコンテキストプロパティ* を利用できます。
 
-In addition, the plugin provides these new data context properties:
+加えて、このプラグインは新たなデータコンテキストプロパティを提供します:
 
 `file-copy.file`
 
-:   The local filepath that should be copied to the remote node
+:   リモートノードにコピーするローカルファイルのパス
 
 `file-copy.filename`
 
-:   The name of the file without any path information.
+:   パス情報を含まないファイル名
 
-Example:
+例:
 
-If you wanted to run some external remote connection command ("/bin/copyremote") in lieu of the
-built-in SCP command, you could specify these attributes for node:
+標準の SCP コマンドの代わりに外部リモート接続コマンド ("/bin/copyremote") を利用したいとき、ノードごとに以下の属性を指定できます。
 
     mynode:
         file-copier: script-copy
         script-copy: /bin/copyremote -host ${node.hostname} -user ${node.username} -- ${file-copy.file} ${node.destdir}
 
-At run time, the properties specified would be expanded to the values for the
-specific node and command string to execute.
+実行時、このプロパティは指定したノード用の値に展開され、実行用のコマンド文字列になります。
 
-OR, you could specify a default to apply to all nodes within the project.properties
-file located at `$RDECK_BASE/projects/NAME/etc/project.properties`.
+もしくは、全てのノードに適用されるデフォルト値を `$RDECK_BASE/projects/NAME/etc/project.properties` にある project.properties ファイル内に定義することおｍできます。
 
     script-copy.default.command= /bin/copyremote -host ${node.hostname} -user ${node.username} -- ${file-copy.file} ${node.destdir}
 
-Similarly for the `$RDECK_BASE/etc/framework.properties` file to apply to all
+同様に全てのプロジェクトに適用するために `$RDECK_BASE/etc/framework.properties` ファイルを利用できます。
 projects.
 
 #### script-copy ファイルパスの定義
@@ -984,7 +978,7 @@ projects.
 このプロパティもしくは属性の値は、対象のノード上にあるファイルのフルパスでなければなりません。
 スクリプトがコピーしたファイルを後から実行できるので、それを FileCopier サービスに伝えるためのものです。
 
-これは *2つ* の方法で実現できます。ここに記載するように設定プロパティとするか、いかに記載する [Requirements of script-copy command](plugins.html#requirements-of-script-copy-command)ように、もしくはスクリプトからの出力を通じるかです。
+これは *2つ* の方法で実現できます。ここに記載するように設定プロパティとするか、以下に記載する [script-copy コマンドの要件](plugins.html#script-copy コマンドの要件) のようにスクリプトからの出力を通じるかです。
 
 通常の Rundeck のコマンド実行で利用できる `${node.name}` や `${job.name}` などのような *データコンテキストプロパティ* を利用できます。
 
@@ -1010,9 +1004,9 @@ projects.
         script-copy: /bin/copyremote -host ${node.hostname} -user ${node.username} -- ${file-copy.file} ${node.destdir}
         script-copy-remote-filepath: ${node.destdir}/${file-copy.filename}
 
-実行時、このプロパティは指定ノードとコマンド文字列の値に展開されます。
+実行時、このプロパティは指定したノード用の値に展開され、実行用のコマンド文字列になります。
 
-もしくは、`$RDECK_BASE/projects/NAME/etc/project.properties` にある project.properties ファイルを含めて全てのノードに適用されるデフォルト値を指定することもできます。
+もしくは、全てのノードに適用されるデフォルト値を `$RDECK_BASE/projects/NAME/etc/project.properties` にある project.properties ファイル内に定義することおｍできます。
 
     script-copy.default.remote-filepath= ${node.destdir}/${file-copy.filename}
 
